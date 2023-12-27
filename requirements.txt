@@ -10,6 +10,7 @@ jwt
 bcrypt
 plaid-python
 asyncpg
+PyJWT
 httpx
 sqlalchemy-cockroachdb
 virtualenv
