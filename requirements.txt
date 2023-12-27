@@ -6,7 +6,6 @@ SQLAlchemy==2.0.23
 fastapi==0.104.1
 intuit-oauth
 pydantic
-jwt
 bcrypt
 plaid-python
 asyncpg
