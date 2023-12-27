@@ -1,0 +1,1 @@
+A public_token expires after 30 minutes.

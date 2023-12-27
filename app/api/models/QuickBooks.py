@@ -1,60 +1,40 @@
-# models.py
-
-from sqlalchemy import Column, Integer, String, DateTime
+from datetime import timedelta
+from datetime import datetime
+from sqlalchemy import Integer, String, DateTime, MetaData
 from sqlalchemy.sql import func
+from sqlalchemy.orm import Mapped, mapped_column
 from app.api.dependencies.database import Base  # Update with your database setup
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
+
+
+metadata = MetaData()
 
 class QuickBooksToken(Base):
     __tablename__ = "quickbooks_tokens"
-    id = Column(Integer, primary_key=True, index=True)
-    access_token = Column(String, nullable=False)
-    refresh_token = Column(String, nullable=False)
-    expires_at = Column(DateTime(timezone=True))  # Add this line
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
+    access_token: Mapped[str] = mapped_column(String, nullable=False)
+    refresh_token: Mapped[str] = mapped_column(String, nullable=True)
+    expires_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.utcnow() + timedelta(minutes=60))  # Default to 30 days from now
+    updated_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.utcnow())  # Default to 30 days from now
+
+
+    user = relationship("User")
     def __repr__(self):
-        return f"<QuickBooksToken(id={self.id}, access_token={self.access_token[:10]}...>"
+        return f"<QuickBooksToken(id={self.id}, access_token={self.access_token[:10]} user_id={self.user_id}...>"
 
+# class Transaction(Base):
+#     __tablename__ = 'quickbooks_transactions'
 
+#     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+#     report_name: Mapped[str] = mapped_column(String, index=True)
+#     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
+#     currency: Mapped[str] = mapped_column(String, index=True)
+#     start_period: Mapped[DateTime] = mapped_column(DateTime)
+#     end_period: Mapped[DateTime] = mapped_column(DateTime)
+#     time: Mapped[DateTime] = mapped_column(DateTime)
+    
+#     user = relationship("User")
 
-from pydantic import BaseModel
-
-class TokenResponse(BaseModel):
-    access_token: str
-    token_type: str
-    expires_in: int
-    refresh_token: str
-
-class UserInfoResponse(BaseModel):
-    user_id: str
-    user_name: str
-    email: str
-
-
-
-
-from fastapi import FastAPI, HTTPException
-
-app = FastAPI()
-
-@app.post("/token", response_model=TokenResponse)
-async def token_endpoint():
-    # Logic to create a token
-    token_data = {
-        "access_token": "some_access_token",
-        "token_type": "bearer",
-        "expires_in": 3600,
-        "refresh_token": "some_refresh_token"
-    }
-    return TokenResponse(**token_data)
-
-@app.get("/user_info", response_model=UserInfoResponse)
-async def user_info_endpoint():
-    # Logic to retrieve user info
-    user_info = {
-        "user_id": "12345",
-        "user_name": "John Doe",
-        "email": "johndoe@example.com"
-    }
-    return UserInfoResponse(**user_info)

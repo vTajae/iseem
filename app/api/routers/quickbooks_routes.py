@@ -1,38 +1,90 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
-from fastapi.responses import RedirectResponse, JSONResponse
+from typing import Dict
+from app.api.dependencies.auth import get_current_user
+from app.api.dependencies.quickbooks_dependencies import get_quickbooks_service
+from app.api.models.QuickBooks import QuickBooksToken
+from app.api.models.User import User
+from app.api.schemas.quickbooks_schema import PaginatedTransactionResponse, QuickBooksQueryParams
 from app.api.services.quickbooks_service import QuickBooksService
-from app.api.repository.quickbooks_repository import QuickBooksRepository
-from app.api.schemas.quickbooks_schema import TokenResponse, TransactionsResponse
+from fastapi import APIRouter, Depends, HTTPException, Request
+from app.config.quickbooks_config import get_env_variable
+from intuitlib.exceptions import AuthClientError
+from fastapi.responses import HTMLResponse, RedirectResponse
+from app.utils.utils import paginate_data
 from intuitlib.enums import Scopes
+import logging
 
 router = APIRouter()
 
-@router.get("/quickbooks/login", response_model=None)
-async def quickbooks_login(service: QuickBooksService = Depends()):
-    auth_url = service.get_auth_url([Scopes.ACCOUNTING])
-    return RedirectResponse(auth_url)
 
-@router.get("/quickbooks/callback", response_model=TokenResponse)
-async def quickbooks_callback(request: Request, 
-                              service: QuickBooksService = Depends()):
+logger = logging.getLogger(__name__)
+
+
+@router.get("/api/quickbooks/login")
+async def quickbooks_login(service: QuickBooksService = Depends(get_quickbooks_service)) -> Dict[str, str]:
+    try:
+        auth_url = service.get_auth_url([Scopes.ACCOUNTING])
+        return {"auth_url": auth_url}
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail="Failed to generate authorization URL")
+
+
+@router.get("/api/quickbooks/callback")
+async def quickbooks_callback(request: Request, user: User = Depends(get_current_user),
+                              service: QuickBooksService = Depends(get_quickbooks_service)):
     code = request.query_params.get('code')
     if not code:
-        raise HTTPException(status_code=400, detail="Missing authorization code")
+        raise HTTPException(
+            status_code=400, detail="Missing authorization code")
 
-    tokens = service.exchange_code_for_tokens(code)
-    # Note: If you need to save tokens using the repository, you can do it here.
-    # But you should not return the repository instance or its method's result as a response.
+    try:
+        # The service handles the exchange of the code for tokens and saves them
+        return await service.exchange_code_for_tokens(code, user.id)
+    #  # Close the authentication window using JavaScript
+    #     response_html = """
+    #     <script>
+    #       // Send a message to the parent window
+    #       window.opener.postMessage('login_complete', '*');
+    #       // Close the authentication window
+    #       window.close();
+    #     </script>
+    #     """
 
-    # Return a response that matches the TokenResponse model
-    return TokenResponse(**tokens)
+        # return RedirectResponse("/api/quickbooks/success")
 
-@router.get("/quickbooks/transactions", response_model=TransactionsResponse)
-async def get_transactions(start_date: str, end_date: str, group_by: str, 
-                           service: QuickBooksService = Depends()):
-    transactions = await service.make_transaction_list_request("company_id", start_date, end_date, group_by)
-    # Format the transactions to match the TransactionsResponse model
-    return TransactionsResponse(transactions=transactions)
+    except AuthClientError as e:
+        raise HTTPException(status_code=e.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error during token exchange: {str(e)}")
 
-@router.get("/success", response_model=None)
-async def success():
-    return JSONResponse(content={"message": "You have successfully logged in to QuickBooks"})
+
+@router.get("/quickbooks/{report_type}", response_model=PaginatedTransactionResponse)
+async def get_quickbooks_report(
+    request: Request,
+    report_type: str,
+    query_params: QuickBooksQueryParams = Depends(),
+    service: QuickBooksService = Depends(get_quickbooks_service),
+    user: User = Depends(get_current_user)
+):
+    company_id = get_env_variable("QUICKBOOKS_COMPANY_ID")
+    if not company_id:
+        raise HTTPException(status_code=500, detail="Company ID is not set in environment variables")
+
+    # Retrieve the access token from cookies, or use None to refresh the token
+    access_token = request.cookies.get("access_token")
+
+    # Fetch full data from QuickBooks using the access token or refreshing it
+    full_data = await service.make_quickbooks_report_request(company_id, report_type, query_params.dict(), access_token, user.id)
+    parsed_report = service.parse_quickbooks_report(full_data)
+    paginated_response = paginate_data(parsed_report, query_params.page, query_params.limit)
+    print(paginated_response, "paginated_response")
+    return PaginatedTransactionResponse(**paginated_response)
+
+@router.get("/quickbooks/token")
+async def get_access_token(current_user: User = Depends(get_current_user)):
+    # Retrieve the latest token for the current user
+    token_record = await QuickBooksToken.filter(user_id=current_user.id).first()
+    if not token_record:
+        raise HTTPException(status_code=404, detail="Token not found")
+    return {"access_token": token_record.access_token}

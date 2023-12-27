@@ -1,15 +1,47 @@
 # app/schemas/user_schema.py
+from datetime import datetime
+from typing import Optional
 from pydantic import BaseModel
 
-class UserBase(BaseModel):
-    user_name: str
-    email: str
+class UserCreate(BaseModel):
+    username: str
+    password: str
+        
+class UserModel(BaseModel):
+    id: int
+    username: str
+    # hashed_password: str
+    # expires_at: datetime
+    updated_at: datetime
+    
+    class Config:
+        from_attributes = True
 
-class UserCreate(UserBase):
+    
+class UserToken(BaseModel):
+    access_token: str
+    refresh_token: str
+
+class UserResponse(BaseModel):
+    user: UserModel
+    tokens: UserToken
+    
+    class Config:
+        from_attributes = True
+
+    
+
+class UserInDB(UserCreate):
+    hashed_password: str
+    
+class UserRegisterSchema(BaseModel):
+    username: str
     password: str
 
-class UserResponse(UserBase):
-    id: int
-
-    class Config:
-        orm_mode = True
+class UserLoginSchema(BaseModel):
+    username: str
+    password: str
+    
+    
+    
+    
