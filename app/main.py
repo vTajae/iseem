@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.concurrency import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,7 +10,7 @@ from app.utils.utils import get_env_variable
 
 # Define your async context manager for lifespan events
 
-CROSS_ORIGIN = get_env_variable('CORS_ORIGIN')
+CORS_ORIGIN = get_env_variable('CORS_ORIGIN')
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -29,7 +30,7 @@ app = FastAPI(lifespan=lifespan)
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[CROSS_ORIGIN],  # Allows specified origins
+    allow_origins=[CORS_ORIGIN],  # Allows specified origins
     allow_credentials=True,
     allow_methods=["*"],  # Allows all methods
     allow_headers=["*"],  # Allows all headers
