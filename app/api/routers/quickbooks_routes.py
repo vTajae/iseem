@@ -3,7 +3,7 @@ from app.api.dependencies.auth import get_current_user
 from app.api.dependencies.quickbooks_dependencies import get_quickbooks_service
 from app.api.models.QuickBooks import QuickBooksToken
 from app.api.models.User import User
-from app.api.schemas.quickbooks_schema import PaginatedTransactionResponse, QuickBooksQueryParams
+from app.api.schemas.quickbooks.quickbooks_TransactionList import PaginatedTransactionResponse, QuickBooksQueryParams, TransactionModel
 from app.api.services.quickbooks_service import QuickBooksService
 from fastapi import APIRouter, Depends, HTTPException, Request
 from app.config.quickbooks_config import get_env_variable
@@ -59,7 +59,7 @@ async def quickbooks_callback(request: Request, user: User = Depends(get_current
             status_code=500, detail=f"Error during token exchange: {str(e)}")
 
 
-@router.get("/quickbooks/{report_type}", response_model=PaginatedTransactionResponse)
+@router.get("/quickbooks/{report_type}")
 async def get_quickbooks_report(
     request: Request,
     report_type: str,
@@ -69,17 +69,19 @@ async def get_quickbooks_report(
 ):
     company_id = get_env_variable("QUICKBOOKS_COMPANY_ID")
     if not company_id:
-        raise HTTPException(status_code=500, detail="Company ID is not set in environment variables")
+        raise HTTPException(
+            status_code=500, detail="Company ID is not set in environment variables")
 
     # Retrieve the access token from cookies, or use None to refresh the token
     access_token = request.cookies.get("access_token")
 
-    # Fetch full data from QuickBooks using the access token or refreshing it
+  # Fetch full data from QuickBooks using the access token or refreshing it
     full_data = await service.make_quickbooks_report_request(company_id, report_type, query_params.dict(), access_token, user.id)
     parsed_report = service.parse_quickbooks_report(full_data)
     paginated_response = paginate_data(parsed_report, query_params.page, query_params.limit)
     print(paginated_response, "paginated_response")
-    return PaginatedTransactionResponse(**paginated_response)
+    return paginated_response
+
 
 @router.get("/quickbooks/token")
 async def get_access_token(current_user: User = Depends(get_current_user)):

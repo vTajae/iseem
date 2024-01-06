@@ -1,15 +1,11 @@
 from datetime import date, datetime
-from typing import Generic, Optional, List, TypeVar
-from fastapi import Query
+from typing import Dict, Generic, Optional, List, TypeVar
 from pydantic import BaseModel
-
-
-
+from fastapi import Query
 
 class QuickBooksTokenCreate(BaseModel):
     access_token: str
     refresh_token: Optional[str] = None
-
 
 class QuickBooksTokenResponse(QuickBooksTokenCreate):
     id: int
@@ -17,54 +13,49 @@ class QuickBooksTokenResponse(QuickBooksTokenCreate):
     created_at: datetime
     updated_at: Optional[datetime] = None
 
-
 class TokenResponse(BaseModel):
     access_token: str
     refresh_token: str
     user_id: int
 
-
 class TransactionData(BaseModel):
-    id: Optional[str]
     value: str
-
-class TransactionQueryParams(BaseModel):
-    start_date: date
-    end_date: date
-    group_by: str
-
-class ColData(BaseModel):
-    col_data: List[TransactionData]
-
+    id: Optional[str] = None
 
 class TransactionRow(BaseModel):
     type: str
-    col_data: List[TransactionData]
-
+    ColData: List[TransactionData]
 
 class TransactionsRows(BaseModel):
-    row: List[TransactionRow]
-
+    Row: List[TransactionRow]
 
 class TransactionHeader(BaseModel):
-    report_name: str
-    start_period: datetime
-    end_period: datetime
-    time: datetime
-    currency: str
-    # Add other fields from Header as needed
+    Time: datetime
+    ReportName: str
+    DateMacro: Optional[str]
+    StartPeriod: date
+    EndPeriod: date
+    Currency: str
+    Option: Optional[List[Dict[str, str]]]
+
+class Column(BaseModel):
+    ColTitle: str
+    ColType: str
+
+class TransactionColumns(BaseModel):
+    Column: List[Column]
 
 
 class TransactionModel(BaseModel):
-    header: TransactionHeader
-    rows: TransactionsRows
+    Header: TransactionHeader
+    Columns: TransactionColumns
+    Rows: TransactionsRows
+
 
 class QuickBooksQueryParams(BaseModel):
     page: int = Query(1, description="Page number", ge=1)
     limit: int = Query(10, description="Items per page", ge=1, le=100)
     minorversion: int = 69  # Static value for minorversion
-
-# link-sandbox-f8e6ffb8-0e52-41e5-a870-ea3a60708911
 
 T = TypeVar('T')
 
@@ -74,5 +65,6 @@ class Pagination(BaseModel, Generic[T]):
     total_pages: int
     total_items: int
 
-class PaginatedTransactionResponse(Pagination[TransactionData]):
+class PaginatedTransactionResponse(Pagination[TransactionModel]):
     pass
+

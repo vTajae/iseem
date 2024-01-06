@@ -20,19 +20,21 @@ class CustomJSONEncoder(JSONEncoder):
     
 
 def paginate_data(data, page: int, limit: int):
+    # print(data, "data")
     # Ensure data['rows'] is a list
-    if not isinstance(data.get('rows', []), list):
+    if not isinstance(data.get('rows', []).get('Row', []), list):
         raise TypeError("Expected a list for pagination, but got a different type")
 
     start_index = (page - 1) * limit
     end_index = start_index + limit
-    paginated_rows = data['rows'][start_index:end_index]
-
+    
+    paginated_rows = data['rows'].get('Row', [])[start_index:end_index]
+    
     return {
         'data': [
             {   'Header': data.get('header', {}),  # Include the header if it exists
                 'Columns': data.get('columns', []),
-                'Rows': paginated_rows
+                'Rows': data.get('rows', {})
             }
         ],  # Include a list of dictionaries, each containing 'Columns' and 'Rows'
         'page': page,

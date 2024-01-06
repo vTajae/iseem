@@ -16,13 +16,15 @@ JWT_ACCESS_TOKEN_EXPIRE_MINUTES = get_env_variable(
 
 async def get_current_user_id(request: Request, user_service: UserService = Depends(get_user_service)):
     token = request.cookies.get("my_token")
-
+    print(token, "token")
     if not token:
         raise HTTPException(
             status_code=403, detail="No authentication token found")
     try:
         payload = jwt.decode(token, USER_JWT_SECRET_KEY,
                              algorithms=[USER_JWT_ALGORITHM])
+        
+        print(payload, "payload")
         user_id = payload.get("user_id")
 
         if user_id is None:
@@ -31,6 +33,7 @@ async def get_current_user_id(request: Request, user_service: UserService = Depe
                 status_code=403, detail="User ID not found in token")
 
         user = await user_service.get_user_by_id(user_id)
+        print(user, "user12")
         if user:
             return user.id
         else:
@@ -50,8 +53,7 @@ async def get_current_user_id(request: Request, user_service: UserService = Depe
 
 async def get_current_user(request: Request, user_service: UserService = Depends(get_user_service)):
     token = request.cookies.get("my_token")
-
-    # print(request.cookies)
+    print(token, "token")
 
     if not token:
         print("1")
@@ -60,6 +62,9 @@ async def get_current_user(request: Request, user_service: UserService = Depends
     try:
         payload = jwt.decode(token, USER_JWT_SECRET_KEY,
                              algorithms=[USER_JWT_ALGORITHM])
+        
+        print(payload, "payload")
+        
         user_id = payload.get("user_id")
 
         if user_id is None:

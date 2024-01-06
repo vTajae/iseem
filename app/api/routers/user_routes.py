@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 import jwt
 from app.api.models.User import User
-from app.api.schemas.quickbooks_schema import TokenResponse
+from app.api.schemas.quickbooks.quickbooks_TransactionList import TokenResponse
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request, Response
 from fastapi.params import Cookie
 from fastapi.responses import RedirectResponse

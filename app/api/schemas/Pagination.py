@@ -1,7 +1,7 @@
 from typing import Generic, TypeVar, List
 from pydantic import BaseModel, create_model
 
-from app.api.schemas.quickbooks_schema import TransactionModel
+from app.api.schemas.quickbooks.quickbooks_TransactionList import TransactionModel
 
 # Define a generic type for the data content
 DataT = TypeVar('DataT')

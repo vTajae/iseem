@@ -3,6 +3,7 @@
 from datetime import datetime, timezone
 import json
 import os
+from app.api.schemas.quickbooks.quickbooks_CashFlow import CashFlowColumns, CashFlowData, CashFlowHeader, CashFlowReport, CashFlowRow, CashFlowRows, CashFlowSummary, TransactionHeader
 from fastapi import HTTPException
 from intuitlib.client import AuthClient
 from intuitlib.exceptions import AuthClientError
@@ -34,7 +35,6 @@ class QuickBooksService:
             return auth_url
         except AuthClientError as e:
             raise HTTPException(status_code=400, detail=str(e))
-        
 
     async def refresh_access_token_if_needed(self, user_id):
         tokens = await self.repo.get_latest_tokens()
@@ -58,7 +58,7 @@ class QuickBooksService:
 
                 logging.info("New tokens obtained, saving to repository.")
                 await self.repo.save_tokens(
-                    new_tokens['access_token'], new_tokens['refresh_token'], user_id )
+                    new_tokens['access_token'], new_tokens['refresh_token'], user_id)
             except AuthClientError as e:
                 logging.error(f"Error refreshing token: {e}")
                 raise HTTPException(status_code=e.status_code,
@@ -72,21 +72,21 @@ class QuickBooksService:
             access_token = self.auth_client.access_token
             refresh_token = self.auth_client.refresh_token
 
-            await self.repo.save_tokens(access_token, refresh_token, user_id )
+            await self.repo.save_tokens(access_token, refresh_token, user_id)
             return {"access_token": access_token, "refresh_token": refresh_token}
         except AuthClientError as e:
             raise HTTPException(status_code=400, detail=str(e))
-
 
     async def make_quickbooks_report_request(self, company_id, report_type, query_params: dict, access_token, user_id):
         if access_token:
             tokens = await self.refresh_access_token_if_needed(user_id)
             if not tokens:
-                raise HTTPException(status_code=401, detail="Authentication required")
+                raise HTTPException(
+                    status_code=401, detail="Authentication required")
             token_to_use = tokens.access_token
         else:
             token_to_use = access_token
-            
+
         # print(token_to_use, "token_to_use")
 
         url = f"https://sandbox-quickbooks.api.intuit.com/v3/company/{company_id}/reports/{report_type}"
@@ -101,9 +101,8 @@ class QuickBooksService:
             response.raise_for_status()
             return response.json()
 
-
     # def parse_transaction_list_report(self, report_data):
-        
+
     #                   # Get the current directory of the quickbooks_service.py file
     #     current_directory = os.path.dirname(os.path.abspath(__file__))
 
@@ -113,17 +112,17 @@ class QuickBooksService:
     # # Step 2: Open and read the JSON file
     #     with open(json_file_path, 'r') as json_file:
     #         report_data = json.load(json_file)
-        
+
     #     # Extract the header and columns
     #     header = report_data.get('Header', {})
     #     columns = report_data.get('Columns', {}).get('Column', [])
-        
+
     #     # Generate a list of column titles for mapping
     #     column_titles = [col.get('ColTitle', 'Unknown') for col in columns]
-        
+
     #     # Extract rows and transform each row
     #     rows = report_data.get('Rows', {}).get('Row', [])
-        
+
     #     # Check if rows is not empty and is a list
     #     if rows and isinstance(rows, list):
     #         transformed_rows = [self.transform_row(row, column_titles) for row in rows]
@@ -131,25 +130,16 @@ class QuickBooksService:
     #         transformed_rows = []
 
     #     return {"header": header, "rows": transformed_rows}
-    
+
     def parse_cashflow_report(self, report_data):
-        # Extract the header
-        header = report_data.get('Header', {})
-        columns = report_data.get('Columns', {}).get('Column', [])
-
-        # Extract rows and keep their structure as is
-        rows = report_data.get('Rows', {}).get('Row', [])
-
-        # Return a dictionary with separate header and raw rows
-        return {"header": header, "rows": rows, "columns": columns}
-
-    def parse_transaction_list_report(self, report_data):
         
-                              # Get the current directory of the quickbooks_service.py file
+        
+        # Get the current directory of the quickbooks_service.py file
         current_directory = os.path.dirname(os.path.abspath(__file__))
 
         # Define the relative path to the JSON file
-        json_file_path = os.path.join(current_directory, '..', '..', 'Transactions.json')
+        json_file_path = os.path.join(
+            current_directory, '..', '..', 'CashFlow.json')
 
     # Step 2: Open and read the JSON file
         with open(json_file_path, 'r') as json_file:
@@ -157,15 +147,38 @@ class QuickBooksService:
         # Extract the header and columns
         header = report_data.get('Header', {})
         columns = report_data.get('Columns', {}).get('Column', [])
-        
+        rows = report_data.get('Rows', {})
+
+        return {
+            "header": header,
+            "columns": columns,
+            "rows": rows
+        }
+
+    def parse_transaction_list_report(self, report_data):
+
+        # Get the current directory of the quickbooks_service.py file
+        current_directory = os.path.dirname(os.path.abspath(__file__))
+
+        # Define the relative path to the JSON file
+        json_file_path = os.path.join(
+            current_directory, '..', '..', 'Transactions.json')
+
+    # Step 2: Open and read the JSON file
+        with open(json_file_path, 'r') as json_file:
+            report_data = json.load(json_file)
+        # Extract the header and columns
+        header = report_data.get('Header', {})
+        columns = report_data.get('Columns', {})
+
         # Extract rows and keep them in raw format
-        rows = report_data.get('Rows', {}).get('Row', [])
+        rows = report_data.get('Rows', {})
 
         return {"header": header, "columns": columns, "rows": rows}
 
-
-    def parse_quickbooks_report(self,report_data):
-        report_name = report_data.get('Header', {}).get('ReportName', '').lower()
+    def parse_quickbooks_report(self, report_data):
+        report_name = report_data.get(
+            'Header', {}).get('ReportName', '').lower()
 
         if report_name == 'cashflow':
             return self.parse_cashflow_report(report_data)
