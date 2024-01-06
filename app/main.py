@@ -9,6 +9,7 @@ from app.utils.utils import get_env_variable
 # origins = ["http://localhost:3000", "https://c893af99.iseem-front-cf.pages.dev/", "http://localhost:3000"]
 
 # Define your async context manager for lifespan events
+load_dotenv()
 
 CORS_ORIGIN = get_env_variable('CORS_ORIGIN')
 
