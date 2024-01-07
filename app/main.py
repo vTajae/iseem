@@ -31,7 +31,7 @@ app = FastAPI(lifespan=lifespan)
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://c893af99.iseem-front-cf.pages.dev"],  # Allows specified origins
+    allow_origins=["https://main.iseem-front-cf.pages.dev/api/quickbooks"],  # Allows specified origins
     allow_credentials=True,
     allow_methods=["*"],  # Allows all methods
     allow_headers=["*"],  # Allows all headers
