@@ -3,6 +3,8 @@ from typing import Optional
 from dotenv import load_dotenv
 import jwt
 from app.api.repository.user_repository import UserRepository
+from app.api.repository.auth_repository import AuthRepository
+
 from app.api.models.User import User
 import bcrypt
 from app.utils.utils import get_env_variable
@@ -17,8 +19,13 @@ JWT_ACCESS_TOKEN_EXPIRE_MINUTES = get_env_variable(
 
 
 class UserService:
-    def __init__(self, user_repo: UserRepository):
+    def __init__(self, user_repo: UserRepository, auth_repo: AuthRepository):
         self.user_repo = user_repo
+        self.auth_repo = auth_repo
+
+    async def invalidate_refresh_token(self, token: str):
+        return await self.auth_repo.invalidate_token(token)
+
 
     async def get_user_by_username(self, username: str):
         user = await self.user_repo.get_user_by_username(username)

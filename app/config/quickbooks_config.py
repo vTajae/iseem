@@ -9,10 +9,10 @@ from app.utils.utils import empty_to_none, get_env_variable
 load_dotenv()
 
 # QuickBooks Configuration
-QUICKBOOKS_CLIENT_ID = get_env_variable('QUICKBOOKS_CLIENT_ID')
-QUICKBOOKS_SECRET = get_env_variable('QUICKBOOKS_SECRET')
+QUICKBOOKS_CLIENT_ID = get_env_variable('PROD_QUICKBOOKS_CLIENT_ID')
+QUICKBOOKS_SECRET = get_env_variable('PROD_QUICKBOOKS_SECRET')
 QUICKBOOKS_ENV = get_env_variable('QUICKBOOKS_ENV')
-QUICKBOOKS_REDIRECT_URI = empty_to_none('QUICKBOOKS_REDIRECT_URI')
+QUICKBOOKS_REDIRECT_URI = empty_to_none('QUICKBOOKS_REDIRECT_URI_DEV')
 
 # Initialize the AuthClient for QuickBooks
 auth_client = AuthClient(

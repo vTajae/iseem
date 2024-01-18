@@ -67,7 +67,7 @@ async def get_quickbooks_report(
     service: QuickBooksService = Depends(get_quickbooks_service),
     user: User = Depends(get_current_user)
 ):
-    company_id = get_env_variable("QUICKBOOKS_COMPANY_ID")
+    company_id = get_env_variable("PROD_QUICKBOOKS_COMPANY_ID")
     if not company_id:
         raise HTTPException(
             status_code=500, detail="Company ID is not set in environment variables")
