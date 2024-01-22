@@ -12,7 +12,7 @@ load_dotenv()
 # Fill in your Plaid API keys
 PLAID_CLIENT_ID = get_env_variable('PLAID_CLIENT_ID')
 PLAID_SECRET = get_env_variable('PLAID_SANDBOX_SECRET')
-PLAID_ENV = get_env_variable('PLAID_ENV', 'sandbox')
+PLAID_ENV = get_env_variable('PLAID_ENV', 'production')
 PLAID_PRODUCTS = get_env_variable('PLAID_PRODUCTS', 'transactions').split(',')
 PLAID_COUNTRY_CODES = get_env_variable('PLAID_COUNTRY_CODES', 'US').split(',')
 PLAID_VERSION = get_env_variable('PLAID_VERSION')
@@ -24,7 +24,7 @@ elif PLAID_ENV == 'production':
 else:
     host = Environment.Sandbox
 
-PLAID_REDIRECT_URI = empty_to_none('PLAID_REDIRECT_URI')
+PLAID_REDIRECT_URI = get_env_variable('PLAID_REDIRECT_URI')
 
 # Initialize the Plaid client
 configuration = Configuration(

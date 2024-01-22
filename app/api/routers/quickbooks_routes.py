@@ -67,14 +67,14 @@ async def get_quickbooks_report(
     service: QuickBooksService = Depends(get_quickbooks_service),
     user: User = Depends(get_current_user)
 ):
-    company_id = get_env_variable("PROD_QUICKBOOKS_COMPANY_ID")
+    company_id = get_env_variable("QUICKBOOKS_COMPANY_ID")
     if not company_id:
         raise HTTPException(
             status_code=500, detail="Company ID is not set in environment variables")
 
     # Retrieve the access token from cookies, or use None to refresh the token
     access_token = request.cookies.get("access_token")
-
+    
   # Fetch full data from QuickBooks using the access token or refreshing it
     full_data = await service.make_quickbooks_report_request(company_id, report_type, query_params.dict(), access_token, user.id)
     parsed_report = service.parse_quickbooks_report(full_data)

@@ -64,7 +64,7 @@ class PlaidService(BaseService):
         client_user_id = str(user_id)
         # Create a link_token for the given user
         request = LinkTokenCreateRequest(
-            products=[Products("auth")],
+            products=[Products("transactions")],
             client_name="Plaid Test App",
             country_codes=[CountryCode('US')],
             redirect_uri=PLAID_REDIRECT_URI,

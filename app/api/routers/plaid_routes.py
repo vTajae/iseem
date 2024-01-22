@@ -17,6 +17,7 @@ router = APIRouter()
 async def create_sandbox_public_token(request_data: SandboxPublicTokenCreateRequestModel, service: PlaidService = Depends(get_plaid_service), user_id: int = Depends(get_current_user_id)):
     try:
         public_token = await service.create_and_exchange_sandbox_public_token(request_data, user_id)
+        print(public_token, "public_token")
         return JSONResponse(public_token)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
