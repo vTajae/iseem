@@ -102,7 +102,6 @@ class QuickBooksService:
 
         async with httpx.AsyncClient() as client:
             response = await client.get(url, headers=headers, params=query_params)
-            print(response, "response")
             response.raise_for_status()
             return response.json()
 
