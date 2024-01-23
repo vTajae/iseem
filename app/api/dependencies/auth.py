@@ -15,7 +15,7 @@ JWT_ACCESS_TOKEN_EXPIRE_MINUTES = get_env_variable(
 
 
 async def get_current_user_id(request: Request, user_service: UserService = Depends(get_user_service)):
-    token = request.cookies.get("my_token")
+    token = request.cookies.get("myRefresh_token")
     print(token, "token")
     
     print("get_current_user", request.cookies)
@@ -56,7 +56,7 @@ async def get_current_user_id(request: Request, user_service: UserService = Depe
 
 
 async def get_current_user(request: Request, user_service: UserService = Depends(get_user_service)):
-    token = request.cookies.get("my_token")
+    token = request.cookies.get("myRefresh_token")
     print(token, "token")
     
 
