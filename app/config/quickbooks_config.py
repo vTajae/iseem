@@ -12,7 +12,7 @@ load_dotenv()
 QUICKBOOKS_CLIENT_ID = get_env_variable('QUICKBOOKS_CLIENT_ID')
 QUICKBOOKS_SECRET = get_env_variable('QUICKBOOKS_SECRET')
 QUICKBOOKS_ENV = get_env_variable('QUICKBOOKS_ENV')
-QUICKBOOKS_REDIRECT_URI = empty_to_none('QUICKBOOKS_REDIRECT_URI_DEV')
+QUICKBOOKS_REDIRECT_URI = empty_to_none('QUICKBOOKS_REDIRECT_URI')
 
 # Initialize the AuthClient for QuickBooks
 auth_client = AuthClient(
