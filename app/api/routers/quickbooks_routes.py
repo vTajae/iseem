@@ -74,11 +74,9 @@ async def get_quickbooks_report(
 
     # Retrieve the access token from cookies, or use None to refresh the token
     access_token = request.cookies.get("access_token")
-    dict
-    print("access_token12344", access_token)
-    
+        
   # Fetch full data from QuickBooks using the access token or refreshing it
-    full_data = await service.make_quickbooks_report_request(company_id, report_type, query_params.model_dump(), access_token, user.id)
+    full_data = await service.make_quickbooks_report_request(company_id, report_type, query_params.dict(), access_token, user.id)
     parsed_report = service.parse_quickbooks_report(full_data)
     paginated_response = paginate_data(parsed_report, query_params.page, query_params.limit)
     print(paginated_response, "paginated_response")

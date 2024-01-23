@@ -73,6 +73,7 @@ class QuickBooksService:
             refresh_token = self.auth_client.refresh_token
 
             await self.repo.save_tokens(access_token, refresh_token, user_id)
+            print({"access_token": access_token, "refresh_token": refresh_token})
             return {"access_token": access_token, "refresh_token": refresh_token}
         except AuthClientError as e:
             raise HTTPException(status_code=400, detail=str(e))
