@@ -24,7 +24,8 @@ class UserService:
         self.auth_repo = auth_repo
 
     async def invalidate_refresh_token(self, token: str):
-        return await self.auth_repo.invalidate_token(token)
+        refresh = await self.auth_repo.invalidate_token(token)
+        return refresh
 
 
     async def get_user_by_username(self, username: str):

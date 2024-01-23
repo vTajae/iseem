@@ -74,7 +74,7 @@ async def get_quickbooks_report(
 
     # Retrieve the access token from cookies, or use None to refresh the token
     access_token = request.cookies.get("access_token")
-    
+    dict
     print("access_token12344", access_token)
     
   # Fetch full data from QuickBooks using the access token or refreshing it

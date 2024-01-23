@@ -86,7 +86,7 @@ class QuickBooksService:
             token_to_use = tokens.access_token
         else:
             token_to_use = access_token
-            
+
             print(token_to_use, "token_to_use")
 
         # print(token_to_use, "token_to_use")
@@ -135,8 +135,7 @@ class QuickBooksService:
     #     return {"header": header, "rows": transformed_rows}
 
     def parse_cashflow_report(self, report_data):
-        
-        
+
         # Get the current directory of the quickbooks_service.py file
         current_directory = os.path.dirname(os.path.abspath(__file__))
 
