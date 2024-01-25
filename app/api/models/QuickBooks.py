@@ -17,6 +17,7 @@ class QuickBooksToken(Base):
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
     access_token: Mapped[str] = mapped_column(String, nullable=False)
     refresh_token: Mapped[str] = mapped_column(String, nullable=True)
+    realm_id: Mapped[str] = mapped_column(String, nullable=True)
     expires_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.utcnow() + timedelta(minutes=60))  # Default to 30 days from now
     updated_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.utcnow())  # Default to 30 days from now
 

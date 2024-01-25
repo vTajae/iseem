@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 async def quickbooks_login(service: QuickBooksService = Depends(get_quickbooks_service)) -> Dict[str, str]:
     try:
         auth_url = service.get_auth_url([Scopes.ACCOUNTING])
+        print(auth_url, "auth_url")
         return {"auth_url": auth_url}
     except Exception as e:
         raise HTTPException(
@@ -33,30 +34,26 @@ async def quickbooks_login(service: QuickBooksService = Depends(get_quickbooks_s
 async def quickbooks_callback(request: Request, user: User = Depends(get_current_user),
                               service: QuickBooksService = Depends(get_quickbooks_service)):
     code = request.query_params.get('code')
+    realm_id = request.query_params.get('realm_id')
+    
+    print(realm_id, "realm_id")
+
     if not code:
         raise HTTPException(
             status_code=400, detail="Missing authorization code")
 
     try:
         # The service handles the exchange of the code for tokens and saves them
-        return await service.exchange_code_for_tokens(code, user.id)
-    #  # Close the authentication window using JavaScript
-    #     response_html = """
-    #     <script>
-    #       // Send a message to the parent window
-    #       window.opener.postMessage('login_complete', '*');
-    #       // Close the authentication window
-    #       window.close();
-    #     </script>
-    #     """
-
-        # return RedirectResponse("/api/quickbooks/success")
+        test = await service.exchange_code_for_tokens(code, user.id , realm_id)
+        print(test, "test1323")
+        return test
+    
 
     except AuthClientError as e:
         raise HTTPException(status_code=e.status_code, detail=str(e))
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Error during token exchange: {str(e)}")
+            status_code=600, detail=f"Error during token exchange: {str(e)}")
 
 
 @router.get("/quickbooks/{report_type}")
@@ -67,16 +64,13 @@ async def get_quickbooks_report(
     service: QuickBooksService = Depends(get_quickbooks_service),
     user: User = Depends(get_current_user)
 ):
-    company_id = get_env_variable("QUICKBOOKS_COMPANY_ID")
-    if not company_id:
-        raise HTTPException(
-            status_code=500, detail="Company ID is not set in environment variables")
 
     # Retrieve the access token from cookies, or use None to refresh the token
     access_token = request.cookies.get("access_token")
-        
+    print(request.cookies, "request.cookies")
+    
   # Fetch full data from QuickBooks using the access token or refreshing it
-    full_data = await service.make_quickbooks_report_request(company_id, report_type, query_params.dict(), access_token, user.id)
+    full_data = await service.make_quickbooks_report_request( report_type, query_params.dict(), access_token, user.id)
     parsed_report = service.parse_quickbooks_report(full_data)
     paginated_response = paginate_data(parsed_report, query_params.page, query_params.limit)
     print(paginated_response, "paginated_response")

@@ -63,22 +63,16 @@ async def login_user(response: Response, user_data: UserLoginSchema, service: Us
     if user is None:
         raise HTTPException(status_code=401, detail="Invalid username or password")
     
-    # Token expiration times
-    access_token_expires = timedelta(minutes=60)
-    refresh_token_expires = timedelta(days=7)
-    
-    # Create access and refresh tokens
-    access_token = service.create_a_token(data={"user_id": user.id}, expires_delta=access_token_expires)
-    refresh_token = service.create_a_token(data={"user_id": user.id}, expires_delta=refresh_token_expires)
-    
-    tokens = {"access_token": access_token, "refresh_token": refresh_token}
-    
+    # Create and save tokens
+    tokens = await service.create_and_save_tokens(user.id)
+        
     # Set refresh token in HttpOnly cookie
-    response.set_cookie(key="myRefresh_token", value=refresh_token, httponly=True, max_age=7 * 24 * 60 * 60)
+    response.set_cookie(key="myRefresh_token", value=tokens["refresh_token"], httponly=True, max_age=7 * 24 * 60 * 60)
     
-    response = {"user": user, "tokens": tokens}
+    response_body = {"user": user, "tokens": tokens}
     
-    return response
+    return response_body
+
 
 @router.get("/user/profile", response_model=UserModel)
 async def user_profile(
@@ -97,8 +91,10 @@ async def user_profile(
 
 
 @router.get("/refresh")
-async def refresh_token(request: Request, response: Response, user_service: UserService = Depends(get_user_service)):
+async def refresh_token(request: Request, response: Response, user_service: UserService = Depends(get_user_service), user: User = Depends(get_current_user),
+):
     old_refresh_token = request.cookies.get("myRefresh_token")
+    
     if not old_refresh_token:
         raise HTTPException(status_code=403, detail="Refresh token not found")
     
@@ -109,21 +105,19 @@ async def refresh_token(request: Request, response: Response, user_service: User
             raise HTTPException(status_code=403, detail="Invalid refresh token")
         
         # Invalidate the old refresh token
-        user_service.invalidate_refresh_token(old_refresh_token)
+        await user_service.invalidate_refresh_token(old_refresh_token)
         
-        # Create new access token
-        access_token_expires = timedelta(minutes=60)
-        new_access_token = user_service.create_a_token(data={"user_id": user_id}, expires_delta=access_token_expires)
+    
+        # Create and save tokens
+        tokens = await user_service.create_and_save_tokens(user.id)
         
-        # Optionally create a new refresh token
-        refresh_token_expires = timedelta(days=7)
-        new_refresh_token = user_service.create_a_token(data={"user_id": user_id}, expires_delta=refresh_token_expires)
+        print(tokens, "tokenzzz")
         
         # Set the new refresh token in a secure HttpOnly cookie
-        response.set_cookie(key="myRefresh_token", value=new_refresh_token, httponly=True, secure=True, samesite='Lax', max_age=7 * 24 * 3600)
+        response.set_cookie(key="myRefresh_token", value=tokens["refresh_token"], httponly=True, max_age=7 * 24 * 60 * 60)
         
         # Return the new access token in the response body
-        return {"access_token": new_access_token, "message": "Access token refreshed"}
+        return {"access_token": tokens, "message": "Access token refreshed"}
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=403, detail="Refresh token has expired")
     except jwt.PyJWTError:

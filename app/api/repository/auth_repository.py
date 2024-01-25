@@ -26,6 +26,7 @@ class AuthRepository:
         )
         await self.db.commit()
 
+
     async def find_token(self, token: str):
         result = await self.db.execute(
             select(Token)

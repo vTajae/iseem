@@ -38,6 +38,11 @@ app.add_middleware(
 app.include_router(user_routes.router)
 app.include_router(quickbooks_routes.router)
 app.include_router(plaid_routes.router)
+# app.include_router(auth_routes.router)
+
+
+
+
 
 
 # Additional routers can be included here as your application grows

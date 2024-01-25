@@ -2,7 +2,7 @@
 from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
-from app.config.quickbooks_config import get_env_variable
+from app.utils.utils import get_env_variable
 import ssl
 
 load_dotenv()
@@ -51,6 +51,8 @@ class AsyncDatabaseSession:
 
     async def close(self):
         await self.engine.dispose()
+        
+    
 
 
 async_database_session = AsyncDatabaseSession(DATABASE_URL)

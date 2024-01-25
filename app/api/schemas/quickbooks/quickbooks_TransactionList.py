@@ -55,7 +55,7 @@ class TransactionModel(BaseModel):
 class QuickBooksQueryParams(BaseModel):
     page: int = Query(1, description="Page number", ge=1)
     limit: int = Query(10, description="Items per page", ge=1, le=100)
-    minorversion: int = 40  # Static value for minorversion
+    minorversion: int = 69  # Static value for minorversion
 
 T = TypeVar('T')
 

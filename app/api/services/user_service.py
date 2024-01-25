@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from typing import Optional
+from app.api.enums.token import TokenType
 from dotenv import load_dotenv
 import jwt
 from app.api.repository.user_repository import UserRepository
@@ -24,8 +25,8 @@ class UserService:
         self.auth_repo = auth_repo
 
     async def invalidate_refresh_token(self, token: str):
-        refresh = await self.auth_repo.invalidate_token(token)
-        return refresh
+        response = await self.auth_repo.invalidate_token(token)
+        return response
 
 
     async def get_user_by_username(self, username: str):
@@ -75,5 +76,20 @@ class UserService:
         to_encode.update({"exp": expire})
         encoded_jwt = jwt.encode(to_encode, USER_JWT_SECRET_KEY, algorithm=USER_JWT_ALGORITHM)
         return encoded_jwt
+    
+    async def create_and_save_tokens(self, user_id: int):
+        # Token expiration times
+        access_token_expires = timedelta(minutes=60)
+        refresh_token_expires = timedelta(days=7)
+        
+        # Create access and refresh tokens
+        access_token = self.create_a_token(data={"user_id": user_id}, expires_delta=access_token_expires)
+        refresh_token = self.create_a_token(data={"user_id": user_id}, expires_delta=refresh_token_expires)
+        
+        # # Save tokens to database
+        # await self.auth_repo.add_token(access_token, user_id, datetime.utcnow() + access_token_expires, TokenType.ACCESS)
+        # await self.auth_repo.add_token(refresh_token, user_id, datetime.utcnow() + refresh_token_expires, TokenType.REFRESH)
+        
+        return {"access_token": access_token, "refresh_token": refresh_token}
     
     
