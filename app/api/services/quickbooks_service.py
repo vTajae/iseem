@@ -147,16 +147,16 @@ class QuickBooksService:
     def parse_cashflow_report(self, report_data):
         
         
-        # Get the current directory of the quickbooks_service.py file
-        current_directory = os.path.dirname(os.path.abspath(__file__))
+    #     # Get the current directory of the quickbooks_service.py file
+    #     current_directory = os.path.dirname(os.path.abspath(__file__))
 
-        # Define the relative path to the JSON file
-        json_file_path = os.path.join(
-            current_directory, '..', '..', 'CashFlow.json')
+    #     # Define the relative path to the JSON file
+    #     json_file_path = os.path.join(
+    #         current_directory, '..', '..', 'CashFlow.json')
 
-    # Step 2: Open and read the JSON file
-        with open(json_file_path, 'r') as json_file:
-            report_data = json.load(json_file)
+    # # Step 2: Open and read the JSON file
+    #     with open(json_file_path, 'r') as json_file:
+    #         report_data = json.load(json_file)
         # Extract the header and columns
         header = report_data.get('Header', {})
         columns = report_data.get('Columns', {}).get('Column', [])
@@ -170,16 +170,16 @@ class QuickBooksService:
 
     def parse_transaction_list_report(self, report_data):
 
-        # Get the current directory of the quickbooks_service.py file
-        current_directory = os.path.dirname(os.path.abspath(__file__))
+    #     # Get the current directory of the quickbooks_service.py file
+    #     current_directory = os.path.dirname(os.path.abspath(__file__))
 
-        # Define the relative path to the JSON file
-        json_file_path = os.path.join(
-            current_directory, '..', '..', 'Transactions.json')
+    #     # Define the relative path to the JSON file
+    #     json_file_path = os.path.join(
+    #         current_directory, '..', '..', 'Transactions.json')
 
-    # Step 2: Open and read the JSON file
-        with open(json_file_path, 'r') as json_file:
-            report_data = json.load(json_file)
+    # # Step 2: Open and read the JSON file
+    #     with open(json_file_path, 'r') as json_file:
+    #         report_data = json.load(json_file)
         # Extract the header and columns
         header = report_data.get('Header', {})
         columns = report_data.get('Columns', {})
