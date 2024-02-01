@@ -1,0 +1,164 @@
+{
+    "Header": {
+      "Customer": "1", 
+      "ReportName": "CustomerBalanceDetail", 
+      "Option": [
+        {
+          "Name": "report_date", 
+          "Value": "2016-03-10"
+        }, 
+        {
+          "Name": "NoReportData", 
+          "Value": "false"
+        }
+      ], 
+      "DateMacro": "all", 
+      "Currency": "USD", 
+      "Time": "2016-03-10T13:43:05-08:00"
+    }, 
+    "Rows": {
+      "Row": [
+        {
+          "Header": {
+            "ColData": [
+              {
+                "id": "1", 
+                "value": "Amy's Bird Sanctuary"
+              }, 
+              {
+                "value": ""
+              }
+            ]
+          }, 
+          "Rows": {
+            "Row": [
+              {
+                "ColData": [
+                  {
+                    "value": "2015-08-04"
+                  }, 
+                  {
+                    "value": "100.0"
+                  }
+                ], 
+                "type": "Data"
+              }, 
+              {
+                "ColData": [
+                  {
+                    "value": "2015-08-04"
+                  }, 
+                  {
+                    "value": "109.1"
+                  }
+                ], 
+                "type": "Data"
+              }, 
+              {
+                "ColData": [
+                  {
+                    "value": "2015-08-04"
+                  }, 
+                  {
+                    "value": "109.1"
+                  }
+                ], 
+                "type": "Data"
+              }, 
+              {
+                "ColData": [
+                  {
+                    "value": "2015-08-04"
+                  }, 
+                  {
+                    "value": "109.2"
+                  }
+                ], 
+                "type": "Data"
+              }, 
+              {
+                "ColData": [
+                  {
+                    "value": "2015-08-04"
+                  }, 
+                  {
+                    "value": "109.2"
+                  }
+                ], 
+                "type": "Data"
+              }, 
+              {
+                "ColData": [
+                  {
+                    "value": "2015-08-04"
+                  }, 
+                  {
+                    "value": "109.1"
+                  }
+                ], 
+                "type": "Data"
+              }, 
+              {
+                "ColData": [
+                  {
+                    "value": "2015-08-04"
+                  }, 
+                  {
+                    "value": "100.0"
+                  }
+                ], 
+                "type": "Data"
+              }, 
+              {
+                "ColData": [
+                  {
+                    "value": "2015-08-04"
+                  }, 
+                  {
+                    "value": "109.1"
+                  }
+                ], 
+                "type": "Data"
+              }
+            ]
+          }, 
+          "type": "Section", 
+          "Summary": {
+            "ColData": [
+              {
+                "value": "Total for Amy's Bird Sanctuary"
+              }, 
+              {
+                "value": "854.8"
+              }
+            ]
+          }
+        }, 
+        {
+          "type": "Section", 
+          "Summary": {
+            "ColData": [
+              {
+                "value": "TOTAL"
+              }, 
+              {
+                "value": "854.8"
+              }
+            ]
+          }
+        }
+      ]
+    }, 
+    "Columns": {
+      "Column": [
+        {
+          "ColType": "tx_date", 
+          "ColTitle": "Date"
+        }, 
+        {
+          "ColType": "subt_amount", 
+          "ColTitle": "Amount"
+        }
+      ]
+    }
+  }

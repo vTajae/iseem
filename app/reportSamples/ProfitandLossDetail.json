@@ -1,0 +1,331 @@
+{
+    "Header": {
+      "Customer": "3", 
+      "ReportName": "ProfitAndLossDetail", 
+      "Option": [
+        {
+          "Name": "NoReportData", 
+          "Value": "false"
+        }
+      ], 
+      "ReportBasis": "Accrual", 
+      "StartPeriod": "2015-06-01", 
+      "Currency": "USD", 
+      "EndPeriod": "2015-06-30", 
+      "Time": "2016-03-11T14:53:39-08:00"
+    }, 
+    "Rows": {
+      "Row": [
+        {
+          "Header": {
+            "ColData": [
+              {
+                "value": "Ordinary Income/Expenses"
+              }, 
+              {
+                "value": ""
+              }, 
+              {
+                "value": ""
+              }
+            ]
+          }, 
+          "Rows": {
+            "Row": [
+              {
+                "Header": {
+                  "ColData": [
+                    {
+                      "value": "Income"
+                    }, 
+                    {
+                      "value": ""
+                    }, 
+                    {
+                      "value": ""
+                    }
+                  ]
+                }, 
+                "Rows": {
+                  "Row": [
+                    {
+                      "Header": {
+                        "ColData": [
+                          {
+                            "id": "49", 
+                            "value": "Landscaping Services"
+                          }, 
+                          {
+                            "value": ""
+                          }, 
+                          {
+                            "value": ""
+                          }
+                        ]
+                      }, 
+                      "Rows": {
+                        "Row": [
+                          {
+                            "Header": {
+                              "ColData": [
+                                {
+                                  "value": "Job Materials"
+                                }, 
+                                {
+                                  "value": ""
+                                }, 
+                                {
+                                  "value": ""
+                                }
+                              ]
+                            }, 
+                            "Rows": {
+                              "Row": [
+                                {
+                                  "Header": {
+                                    "ColData": [
+                                      {
+                                        "value": "Plants and Soil"
+                                      }, 
+                                      {
+                                        "value": ""
+                                      }, 
+                                      {
+                                        "value": ""
+                                      }
+                                    ]
+                                  }, 
+                                  "Rows": {
+                                    "Row": [
+                                      {
+                                        "ColData": [
+                                          {
+                                            "value": "2015-06-27"
+                                          }, 
+                                          {
+                                            "id": "3", 
+                                            "value": "Cool Cars"
+                                          }, 
+                                          {
+                                            "value": "1750.0"
+                                          }
+                                        ], 
+                                        "type": "Data"
+                                      }
+                                    ]
+                                  }, 
+                                  "type": "Section", 
+                                  "Summary": {
+                                    "ColData": [
+                                      {
+                                        "value": "Total for Plants and Soil"
+                                      }, 
+                                      {
+                                        "value": ""
+                                      }, 
+                                      {
+                                        "value": "1750.0"
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }, 
+                            "type": "Section", 
+                            "Summary": {
+                              "ColData": [
+                                {
+                                  "value": "Total for Job Materials"
+                                }, 
+                                {
+                                  "value": ""
+                                }, 
+                                {
+                                  "value": "1750.0"
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }, 
+                      "type": "Section", 
+                      "Summary": {
+                        "ColData": [
+                          {
+                            "value": "Total for Landscaping Services"
+                          }, 
+                          {
+                            "value": ""
+                          }, 
+                          {
+                            "value": "1750.0"
+                          }
+                        ]
+                      }
+                    }, 
+                    {
+                      "Header": {
+                        "ColData": [
+                          {
+                            "id": "79", 
+                            "value": "Sales of Product Income"
+                          }, 
+                          {
+                            "value": ""
+                          }, 
+                          {
+                            "value": ""
+                          }
+                        ]
+                      }, 
+                      "Rows": {
+                        "Row": [
+                          {
+                            "ColData": [
+                              {
+                                "value": "2015-06-27"
+                              }, 
+                              {
+                                "id": "3", 
+                                "value": "Cool Cars"
+                              }, 
+                              {
+                                "value": "20.0"
+                              }
+                            ], 
+                            "type": "Data"
+                          }, 
+                          {
+                            "ColData": [
+                              {
+                                "value": "2015-06-27"
+                              }, 
+                              {
+                                "id": "3", 
+                                "value": "Cool Cars"
+                              }, 
+                              {
+                                "value": "24.0"
+                              }
+                            ], 
+                            "type": "Data"
+                          }
+                        ]
+                      }, 
+                      "type": "Section", 
+                      "Summary": {
+                        "ColData": [
+                          {
+                            "value": "Total for Sales of Product Income"
+                          }, 
+                          {
+                            "value": ""
+                          }, 
+                          {
+                            "value": "44.0"
+                          }
+                        ]
+                      }
+                    }, 
+                    {
+                      "Header": {
+                        "ColData": [
+                          {
+                            "id": "1", 
+                            "value": "Services"
+                          }, 
+                          {
+                            "value": ""
+                          }, 
+                          {
+                            "value": ""
+                          }
+                        ]
+                      }, 
+                      "Rows": {
+                        "Row": [
+                          {
+                            "ColData": [
+                              {
+                                "value": "2015-06-27"
+                              }, 
+                              {
+                                "id": "3", 
+                                "value": "Cool Cars"
+                              }, 
+                              {
+                                "value": "400.0"
+                              }
+                            ], 
+                            "type": "Data"
+                          }
+                        ]
+                      }, 
+                      "type": "Section", 
+                      "Summary": {
+                        "ColData": [
+                          {
+                            "value": "Total for Services"
+                          }, 
+                          {
+                            "value": ""
+                          }, 
+                          {
+                            "value": "400.0"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }, 
+                "type": "Section", 
+                "Summary": {
+                  "ColData": [
+                    {
+                      "value": "Total for Income"
+                    }, 
+                    {
+                      "value": ""
+                    }, 
+                    {
+                      "value": "2194.0"
+                    }
+                  ]
+                }
+              }
+            ]
+          }, 
+          "type": "Section", 
+          "Summary": {
+            "ColData": [
+              {
+                "value": "Net Income"
+              }, 
+              {
+                "value": ""
+              }, 
+              {
+                "value": "2194.0"
+              }
+            ]
+          }
+        }
+      ]
+    }, 
+    "Columns": {
+      "Column": [
+        {
+          "ColType": "tx_date", 
+          "ColTitle": "Date"
+        }, 
+        {
+          "ColType": "name", 
+          "ColTitle": "Name"
+        }, 
+        {
+          "ColType": "subt_nat_amount", 
+          "ColTitle": "Amount"
+        }
+      ]
+    }
+  }

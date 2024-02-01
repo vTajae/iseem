@@ -1,0 +1,171 @@
+{
+  "Header": {
+    "ReportName": "CashFlow", 
+    "Option": [
+      {
+        "Name": "NoReportData", 
+        "Value": "false"
+      }
+    ], 
+    "DateMacro": "last calendar year-to-date", 
+    "StartPeriod": "2015-01-01", 
+    "Currency": "USD", 
+    "EndPeriod": "2015-03-09", 
+    "Time": "2016-03-09T11:40:50-08:00", 
+    "SummarizeColumnsBy": "Total"
+  }, 
+  "Rows": {
+    "Row": [
+      {
+        "Header": {
+          "ColData": [
+            {
+              "value": "OPERATING ACTIVITIES"
+            }, 
+            {
+              "value": ""
+            }
+          ]
+        }, 
+        "Rows": {
+          "Row": [
+            {
+              "ColData": [
+                {
+                  "value": "Net Income"
+                }, 
+                {
+                  "value": "-300.00"
+                }
+              ], 
+              "type": "Data", 
+              "group": "NetIncome"
+            }, 
+            {
+              "Header": {
+                "ColData": [
+                  {
+                    "value": "Adjustments to reconcile Net Income to Net Cash provided by operations:"
+                  }, 
+                  {
+                    "value": ""
+                  }
+                ]
+              }, 
+              "Rows": {
+                "Row": [
+                  {
+                    "ColData": [
+                      {
+                        "id": "33", 
+                        "value": "Accounts Payable (A/P)"
+                      }, 
+                      {
+                        "value": "300.00"
+                      }
+                    ], 
+                    "type": "Data"
+                  }
+                ]
+              }, 
+              "type": "Section", 
+              "group": "OperatingAdjustments"
+            }
+          ]
+        }, 
+        "type": "Section", 
+        "group": "OperatingActivities", 
+        "Summary": {
+          "ColData": [
+            {
+              "value": "Total Adjustments to reconcile Net Income to Net Cash provided by operations:"
+            }, 
+            {
+              "value": "300.00"
+            }
+          ]
+        }
+      }, 
+      {
+        "Header": {
+          "ColData": [
+            {
+              "value": "FINANCING ACTIVITIES"
+            }, 
+            {
+              "value": ""
+            }
+          ]
+        }, 
+        "Rows": {
+          "Row": [
+            {
+              "ColData": [
+                {
+                  "id": "34", 
+                  "value": "Opening Balance Equity"
+                }, 
+                {
+                  "value": "5000.00"
+                }
+              ], 
+              "type": "Data"
+            }
+          ]
+        }, 
+        "type": "Section", 
+        "group": "FinancingActivities", 
+        "Summary": {
+          "ColData": [
+            {
+              "value": "Net cash provided by financing activities"
+            }, 
+            {
+              "value": "5000.00"
+            }
+          ]
+        }
+      }, 
+      {
+        "group": "CashIncrease", 
+        "type": "Section", 
+        "Summary": {
+          "ColData": [
+            {
+              "value": "Net cash increase for period"
+            }, 
+            {
+              "value": "5000.00"
+            }
+          ]
+        }
+      }, 
+      {
+        "group": "EndingCash", 
+        "type": "Section", 
+        "Summary": {
+          "ColData": [
+            {
+              "value": "Cash at end of period"
+            }, 
+            {
+              "value": "5000.00"
+            }
+          ]
+        }
+      }
+    ]
+  }, 
+  "Columns": {
+    "Column": [
+      {
+        "ColType": "Account", 
+        "ColTitle": ""
+      }, 
+      {
+        "ColType": "Money", 
+        "ColTitle": "Total"
+      }
+    ]
+  }
+}

@@ -1,0 +1,218 @@
+{
+  "data": [
+    {
+      "Header": {
+        "Time": "2024-01-24T21:28:49-08:00",
+        "ReportName": "TransactionList",
+        "DateMacro": "this month-to-date",
+        "StartPeriod": "2024-01-01",
+        "EndPeriod": "2024-01-24",
+        "Currency": "USD",
+        "Option": [{ "Name": "NoReportData", "Value": "false" }]
+      },
+      "Columns": {
+        "Column": [
+          {
+            "ColTitle": "Date",
+            "ColType": "Date",
+            "MetaData": [{ "Name": "ColKey", "Value": "tx_date" }]
+          },
+          {
+            "ColTitle": "Transaction Type",
+            "ColType": "String",
+            "MetaData": [{ "Name": "ColKey", "Value": "txn_type" }]
+          },
+          {
+            "ColTitle": "Num",
+            "ColType": "String",
+            "MetaData": [{ "Name": "ColKey", "Value": "doc_num" }]
+          },
+          {
+            "ColTitle": "Posting",
+            "ColType": "Boolean",
+            "MetaData": [{ "Name": "ColKey", "Value": "is_no_post" }]
+          },
+          {
+            "ColTitle": "Name",
+            "ColType": "String",
+            "MetaData": [{ "Name": "ColKey", "Value": "name" }]
+          },
+          {
+            "ColTitle": "Memo/Description",
+            "ColType": "String",
+            "MetaData": [{ "Name": "ColKey", "Value": "memo" }]
+          },
+          {
+            "ColTitle": "Account",
+            "ColType": "String",
+            "MetaData": [{ "Name": "ColKey", "Value": "account_name" }]
+          },
+          {
+            "ColTitle": "Split",
+            "ColType": "String",
+            "MetaData": [{ "Name": "ColKey", "Value": "other_account" }]
+          },
+          {
+            "ColTitle": "Amount",
+            "ColType": "Money",
+            "MetaData": [{ "Name": "ColKey", "Value": "subt_nat_amount" }]
+          }
+        ]
+      },
+      "Rows": {
+        "Row": [
+          {
+            "ColData": [
+              { "value": "2024-01-01" },
+              { "value": "Expense", "id": "2583" },
+              { "value": "" },
+              { "value": "Yes" },
+              { "value": "Upwork", "id": "260" },
+              {
+                "value": "UPWORK*-652384294MEMSANTA CLARA XXXX-XXXXXX-46007 - BILL  TRENEER"
+              },
+              { "value": "American Express", "id": "150" },
+              {
+                "value": "General business expenses:Memberships & subscriptions",
+                "id": "104"
+              },
+              { "value": "21.32" }
+            ],
+            "type": "Data"
+          },
+          {
+            "ColData": [
+              { "value": "2024-01-03" },
+              { "value": "Invoice", "id": "2584" },
+              { "value": "21315" },
+              { "value": "Yes" },
+              { "value": "Fast Lane Consulting", "id": "1" },
+              { "value": "" },
+              { "value": "Accounts receivable (A/R)", "id": "8" },
+              { "value": "-Split-", "id": "" },
+              { "value": "15600.00" }
+            ],
+            "type": "Data"
+          },
+          {
+            "ColData": [
+              { "value": "2024-01-03" },
+              { "value": "Expense", "id": "2843" },
+              { "value": "" },
+              { "value": "Yes" },
+              { "value": "Earthlink", "id": "33" },
+              {
+                "value": "EARTHLINK           DALLAS              TX XXXX-XXXXXX-47252 - BILL TRENEER"
+              },
+              { "value": "American Express", "id": "150" },
+              { "value": "Utilities:Internet & TV services", "id": "139" },
+              { "value": "12.90" }
+            ],
+            "type": "Data"
+          },
+          {
+            "ColData": [
+              { "value": "2024-01-04" },
+              { "value": "Invoice", "id": "2585" },
+              { "value": "21316" },
+              { "value": "Yes" },
+              { "value": "VanderHowen", "id": "294" },
+              { "value": "" },
+              { "value": "Accounts receivable (A/R)", "id": "8" },
+              { "value": "Services", "id": "5" },
+              { "value": "9048.00" }
+            ],
+            "type": "Data"
+          },
+          {
+            "ColData": [
+              { "value": "2024-01-08" },
+              { "value": "Invoice", "id": "2586" },
+              { "value": "21317" },
+              { "value": "Yes" },
+              { "value": "Fast Lane Consulting", "id": "1" },
+              { "value": "" },
+              { "value": "Accounts receivable (A/R)", "id": "8" },
+              { "value": "-Split-", "id": "" },
+              { "value": "19260.00" }
+            ],
+            "type": "Data"
+          },
+          {
+            "ColData": [
+              { "value": "2024-01-09" },
+              { "value": "Invoice", "id": "2587" },
+              { "value": "21318" },
+              { "value": "Yes" },
+              { "value": "Dawson", "id": "210" },
+              { "value": "" },
+              { "value": "Accounts receivable (A/R)", "id": "8" },
+              { "value": "-Split-", "id": "" },
+              { "value": "27935.07" }
+            ],
+            "type": "Data"
+          },
+          {
+            "ColData": [
+              { "value": "2024-01-16" },
+              { "value": "Invoice", "id": "2588" },
+              { "value": "21319" },
+              { "value": "Yes" },
+              { "value": "Fast Lane Consulting", "id": "1" },
+              { "value": "" },
+              { "value": "Accounts receivable (A/R)", "id": "8" },
+              { "value": "-Split-", "id": "" },
+              { "value": "19000.00" }
+            ],
+            "type": "Data"
+          },
+          {
+            "ColData": [
+              { "value": "2024-01-16" },
+              { "value": "Invoice", "id": "2589" },
+              { "value": "21320" },
+              { "value": "Yes" },
+              { "value": "Fast Lane Consulting", "id": "1" },
+              { "value": "" },
+              { "value": "Accounts receivable (A/R)", "id": "8" },
+              { "value": "Services", "id": "5" },
+              { "value": "16800.00" }
+            ],
+            "type": "Data"
+          },
+          {
+            "ColData": [
+              { "value": "2024-01-16" },
+              { "value": "Invoice", "id": "2590" },
+              { "value": "21321" },
+              { "value": "Yes" },
+              { "value": "Fast Lane Consulting", "id": "1" },
+              { "value": "" },
+              { "value": "Accounts receivable (A/R)", "id": "8" },
+              { "value": "-Split-", "id": "" },
+              { "value": "13600.00" }
+            ],
+            "type": "Data"
+          },
+          {
+            "ColData": [
+              { "value": "2024-01-16" },
+              { "value": "Invoice", "id": "2591" },
+              { "value": "21322" },
+              { "value": "Yes" },
+              { "value": "Fast Lane Consulting", "id": "1" },
+              { "value": "" },
+              { "value": "Accounts receivable (A/R)", "id": "8" },
+              { "value": "Services", "id": "5" },
+              { "value": "5000.00" }
+            ],
+            "type": "Data"
+          }
+        ]
+      }
+    }
+  ],
+  "page": 1,
+  "total_pages": 1,
+  "total_items": 1
+}
