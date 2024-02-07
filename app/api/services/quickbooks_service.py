@@ -100,8 +100,8 @@ class QuickBooksService:
         # print(token_to_use, "token_to_use")
         print(company_id, "company_id")
 
-        url = f"https://sandbox-quickbooks.api.intuit.com/v3/company/{company_id}/reports/{report_type}"
-        # url = f"https://quickbooks.api.intuit.com/v3/company/{company_id}/reports/{report_type}"
+        # url = f"https://sandbox-quickbooks.api.intuit.com/v3/company/{company_id}/reports/{report_type}"
+        url = f"https://quickbooks.api.intuit.com/v3/company/{company_id}/reports/{report_type}"
 
         headers = {
             "Authorization": f"Bearer {token_to_use}",
