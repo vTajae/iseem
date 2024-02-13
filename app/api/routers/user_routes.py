@@ -90,7 +90,7 @@ async def user_profile(
 
 
 @router.get("/refresh")
-async def refresh_token(request: Request, response: Response, user_service: UserService = Depends(get_user_service), user: User = Depends(get_current_user),
+async def refresh_token(request: Request, response: Response, user_service: UserService = Depends(get_user_service),
 ):
     old_refresh_token = request.cookies.get("myRefresh_token")
     
@@ -108,7 +108,7 @@ async def refresh_token(request: Request, response: Response, user_service: User
         
     
         # Create and save tokens
-        tokens = await user_service.create_and_save_tokens(user.id)
+        tokens = await user_service.create_and_save_tokens(user_id)
         
         print(tokens, "tokenzzz")
         
