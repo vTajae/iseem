@@ -81,6 +81,7 @@ async def get_current_user(request: Request, user_service: UserService = Depends
                 status_code=403, detail="User ID not found in token")
 
         user = await user_service.get_user_by_id(user_id)
+        print(user, "user18")
         if user:
             return user
         else:

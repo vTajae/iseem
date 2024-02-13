@@ -93,7 +93,7 @@ class QuickBooksService:
             raise HTTPException(status_code=400, detail=str(e))
 
     async def make_quickbooks_report_request(self, report_type, query_params: dict, access_token, user_id: str):
-        print(user_id, "user_id")
+        print(user_id, "user_id6346")
         # if access_token:
         #     tokens = await self.refresh_access_token_if_needed(user_id)
         #     if not tokens:
