@@ -1,3 +1,1 @@
 A public_token expires after 30 minutes.
-A access_token expired after 60 minutes.
-A refresh_token will expire after 30 days.

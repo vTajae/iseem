@@ -36,26 +36,35 @@ class QuickBooksService:
             raise HTTPException(status_code=400, detail=str(e))
 
     async def refresh_access_token_if_needed(self, user_id):
-        
+
         tokens = await self.repo.get_latest_tokens(user_id)
 
         # Check if tokens exist and if the access token has expired
-        
+
         # print(self.is_token_expired(tokens.expires_at), "self.is_token_expired(tokens.expires_at)")
-        
+
         if not tokens or self.is_token_expired(tokens.expires_at):
             # Refresh the token using the stored refresh token
-            
+
             print(tokens.refresh_token, "tokens")
-            new_tokens = self.auth_client.refresh(refresh_token=tokens.refresh_token)
+
+        try:
+            self.auth_client.refresh(
+                refresh_token=tokens.refresh_token)
+        except AuthClientError as e:
+            # just printing here but it can be used for retry workflows, logging, etc
+            print(e.status_code)
+            print(e.content)
+            print(e.intuit_tid)
+
             # Assume new_tokens is a dictionary with 'access_token' and 'refresh_token' keys
             # Save the new tokens
-            print(new_tokens, "new_tokens")
-            await self.repo.save_tokens(new_tokens['access_token'], new_tokens['refresh_token'], user_id, tokens.realm_id)  # Ensure you pass all required parameters to save_tokens
+            # Ensure you pass all required parameters to save_tokens
+            await self.repo.save_tokens(tokens.access_token, tokens.refresh_token, user_id, tokens.realm_id)
             # Return the new tokens as a dictionary for consistency
             return {
-                'access_token': new_tokens['access_token'],
-                'refresh_token': new_tokens['refresh_token']
+                'access_token': tokens.access_token,
+                'refresh_token': tokens.refresh_token
             }
 
         # If the tokens are valid, return them in a dictionary format
@@ -64,7 +73,6 @@ class QuickBooksService:
             'refresh_token': tokens.refresh_token
         }
 
- 
     async def exchange_code_for_tokens(self, code: int, user_id: str, realm_id: str):
         try:
             # print(code, "code")
@@ -74,7 +82,7 @@ class QuickBooksService:
             access_token = self.auth_client.access_token
             refresh_token = self.auth_client.refresh_token
             print(realm_id, "realm_id !@##")
-            
+
             print(user_id, "user_id")
 
             await self.repo.save_tokens(access_token, refresh_token, user_id, realm_id)
@@ -117,33 +125,32 @@ class QuickBooksService:
             "Content-Type": "application/json"
         }
 
-
         async with httpx.AsyncClient() as client:
             response = await client.get(url, headers=headers, params=query_params)
             response.raise_for_status()
             return response.json()
 
     def parse_cashflow_report(self, report_data):
-    #  # Get the current directory of the quickbooks_service.py file
-    #     current_directory = os.path.dirname(os.path.abspath(__file__))
+        #  # Get the current directory of the quickbooks_service.py file
+        #     current_directory = os.path.dirname(os.path.abspath(__file__))
 
-    #     # Navigate from 'services' to the 'api' directory
-    #     app_directory = os.path.dirname(os.path.dirname(current_directory))
+        #     # Navigate from 'services' to the 'api' directory
+        #     app_directory = os.path.dirname(os.path.dirname(current_directory))
 
-    #     # Navigate from 'app' to the 'samples' directory
-    #     samples_directory = os.path.join(app_directory, 'reportSamples')
+        #     # Navigate from 'app' to the 'samples' directory
+        #     samples_directory = os.path.join(app_directory, 'reportSamples')
 
-    #     # Define the relative path to the JSON file inside the 'samples' directory
-    #     json_file_path = os.path.join(samples_directory, 'CashFlow.json')
+        #     # Define the relative path to the JSON file inside the 'samples' directory
+        #     json_file_path = os.path.join(samples_directory, 'CashFlow.json')
 
-    # # Step 2: Open and read the JSON file
-    #     with open(json_file_path, 'r') as json_file:
-    #         report_data = json.load(json_file)
+        # # Step 2: Open and read the JSON file
+        #     with open(json_file_path, 'r') as json_file:
+        #         report_data = json.load(json_file)
         #     # Extract the header and columns
         header = report_data.get('Header', {})
         columns = report_data.get('Columns', {}).get('Column', [])
         rows = report_data.get('Rows', {})
-        
+
         return {
             "Header": header,
             "Columns": columns,
@@ -152,23 +159,23 @@ class QuickBooksService:
 
     def parse_transaction_list_report(self, report_data):
 
-    #     # Get the current directory of the quickbooks_service.py file
-    #     current_directory = os.path.dirname(os.path.abspath(__file__))
+        #     # Get the current directory of the quickbooks_service.py file
+        #     current_directory = os.path.dirname(os.path.abspath(__file__))
 
-    #     # Navigate from 'services' to the 'api' directory
-    #     app_directory = os.path.dirname(os.path.dirname(current_directory))
+        #     # Navigate from 'services' to the 'api' directory
+        #     app_directory = os.path.dirname(os.path.dirname(current_directory))
 
-    #     # Navigate from 'app' to the 'samples' directory
-    #     samples_directory = os.path.join(app_directory, 'reportSamples')
+        #     # Navigate from 'app' to the 'samples' directory
+        #     samples_directory = os.path.join(app_directory, 'reportSamples')
 
-    #     # Define the relative path to the JSON file inside the 'samples' directory
-    #     json_file_path = os.path.join(
-    #         samples_directory, 'TransactionList.json')
+        #     # Define the relative path to the JSON file inside the 'samples' directory
+        #     json_file_path = os.path.join(
+        #         samples_directory, 'TransactionList.json')
 
-    # # Step 2: Open and read the JSON file
-    #     with open(json_file_path, 'r') as json_file:
-    #         report_data = json.load(json_file)
-    # Extract the header and columns
+        # # Step 2: Open and read the JSON file
+        #     with open(json_file_path, 'r') as json_file:
+        #         report_data = json.load(json_file)
+        # Extract the header and columns
         header = report_data.get('Header', {})
         columns = report_data.get('Columns', {})
 
@@ -179,27 +186,27 @@ class QuickBooksService:
 
     def parse_aged_payable_detail_report(self, report_data):
 
-    #     # Get the current directory of the quickbooks_service.py file
-    #     current_directory = os.path.dirname(os.path.abspath(__file__))
+        #     # Get the current directory of the quickbooks_service.py file
+        #     current_directory = os.path.dirname(os.path.abspath(__file__))
 
-    #     # Navigate from 'services' to the 'api' directory
-    #     app_directory = os.path.dirname(os.path.dirname(current_directory))
+        #     # Navigate from 'services' to the 'api' directory
+        #     app_directory = os.path.dirname(os.path.dirname(current_directory))
 
-    #     # Navigate from 'app' to the 'samples' directory
-    #     samples_directory = os.path.join(app_directory, 'reportSamples')
+        #     # Navigate from 'app' to the 'samples' directory
+        #     samples_directory = os.path.join(app_directory, 'reportSamples')
 
-    #     # Define the relative path to the JSON file inside the 'samples' directory
-    #     json_file_path = os.path.join(samples_directory, 'aPagingDetail.json')
+        #     # Define the relative path to the JSON file inside the 'samples' directory
+        #     json_file_path = os.path.join(samples_directory, 'aPagingDetail.json')
 
-    #     # Check if the file exists
-    #     if os.path.exists(json_file_path):
-    #         print(f"JSON file path: {json_file_path}")
-    #     else:
-    #         print("JSON file not found.")
+        #     # Check if the file exists
+        #     if os.path.exists(json_file_path):
+        #         print(f"JSON file path: {json_file_path}")
+        #     else:
+        #         print("JSON file not found.")
 
-    # # Step 2: Open and read the JSON file
-    #     with open(json_file_path, 'r') as json_file:
-    #         report_data = json.load(json_file)
+        # # Step 2: Open and read the JSON file
+        #     with open(json_file_path, 'r') as json_file:
+        #         report_data = json.load(json_file)
         # Extract the header and columns
         header = report_data.get('Header', {})
         columns = report_data.get('Columns', {})
@@ -211,27 +218,27 @@ class QuickBooksService:
 
     def parse_balance_sheet_report(self, report_data):
 
-    #     # Get the current directory of the quickbooks_service.py file
-    #     current_directory = os.path.dirname(os.path.abspath(__file__))
+        #     # Get the current directory of the quickbooks_service.py file
+        #     current_directory = os.path.dirname(os.path.abspath(__file__))
 
-    #     # Navigate from 'services' to the 'api' directory
-    #     app_directory = os.path.dirname(os.path.dirname(current_directory))
+        #     # Navigate from 'services' to the 'api' directory
+        #     app_directory = os.path.dirname(os.path.dirname(current_directory))
 
-    #     # Navigate from 'app' to the 'samples' directory
-    #     samples_directory = os.path.join(app_directory, 'reportSamples')
+        #     # Navigate from 'app' to the 'samples' directory
+        #     samples_directory = os.path.join(app_directory, 'reportSamples')
 
-    #     # Define the relative path to the JSON file inside the 'samples' directory
-    #     json_file_path = os.path.join(samples_directory, 'BalanceSheet.json')
+        #     # Define the relative path to the JSON file inside the 'samples' directory
+        #     json_file_path = os.path.join(samples_directory, 'BalanceSheet.json')
 
-    #     # Check if the file exists
-    #     if os.path.exists(json_file_path):
-    #         print(f"JSON file path: {json_file_path}")
-    #     else:
-    #         print("JSON file not found.")
+        #     # Check if the file exists
+        #     if os.path.exists(json_file_path):
+        #         print(f"JSON file path: {json_file_path}")
+        #     else:
+        #         print("JSON file not found.")
 
-    # # Step 2: Open and read the JSON file
-    #     with open(json_file_path, 'r') as json_file:
-    #         report_data = json.load(json_file)
+        # # Step 2: Open and read the JSON file
+        #     with open(json_file_path, 'r') as json_file:
+        #         report_data = json.load(json_file)
         # Extract the header and columns
         header = report_data.get('Header', {})
         columns = report_data.get('Columns', {})
@@ -243,28 +250,28 @@ class QuickBooksService:
 
     def parse_customer_balance_detail_list_report(self, report_data):
 
-    #     # Get the current directory of the quickbooks_service.py file
-    #     current_directory = os.path.dirname(os.path.abspath(__file__))
+        #     # Get the current directory of the quickbooks_service.py file
+        #     current_directory = os.path.dirname(os.path.abspath(__file__))
 
-    #     # Navigate from 'services' to the 'api' directory
-    #     app_directory = os.path.dirname(os.path.dirname(current_directory))
+        #     # Navigate from 'services' to the 'api' directory
+        #     app_directory = os.path.dirname(os.path.dirname(current_directory))
 
-    #     # Navigate from 'app' to the 'samples' directory
-    #     samples_directory = os.path.join(app_directory, 'reportSamples')
+        #     # Navigate from 'app' to the 'samples' directory
+        #     samples_directory = os.path.join(app_directory, 'reportSamples')
 
-    #     # Define the relative path to the JSON file inside the 'samples' directory
-    #     json_file_path = os.path.join(
-    #         samples_directory, 'CustomerBalanceDetail.json')
+        #     # Define the relative path to the JSON file inside the 'samples' directory
+        #     json_file_path = os.path.join(
+        #         samples_directory, 'CustomerBalanceDetail.json')
 
-    #     # Check if the file exists
-    #     if os.path.exists(json_file_path):
-    #         print(f"JSON file path: {json_file_path}")
-    #     else:
-    #         print("JSON file not found.")
+        #     # Check if the file exists
+        #     if os.path.exists(json_file_path):
+        #         print(f"JSON file path: {json_file_path}")
+        #     else:
+        #         print("JSON file not found.")
 
-    # # Step 2: Open and read the JSON file
-    #     with open(json_file_path, 'r') as json_file:
-    #         report_data = json.load(json_file)
+        # # Step 2: Open and read the JSON file
+        #     with open(json_file_path, 'r') as json_file:
+        #         report_data = json.load(json_file)
         # Extract the header and columns
         header = report_data.get('Header', {})
         columns = report_data.get('Columns', {})
@@ -276,28 +283,28 @@ class QuickBooksService:
 
     def parse_invoice_report(self, report_data):
 
-    #     # Get the current directory of the quickbooks_service.py file
-    #     current_directory = os.path.dirname(os.path.abspath(__file__))
+        #     # Get the current directory of the quickbooks_service.py file
+        #     current_directory = os.path.dirname(os.path.abspath(__file__))
 
-    #     # Navigate from 'services' to the 'api' directory
-    #     app_directory = os.path.dirname(os.path.dirname(current_directory))
+        #     # Navigate from 'services' to the 'api' directory
+        #     app_directory = os.path.dirname(os.path.dirname(current_directory))
 
-    #     # Navigate from 'app' to the 'samples' directory
-    #     samples_directory = os.path.join(app_directory, 'reportSamples')
+        #     # Navigate from 'app' to the 'samples' directory
+        #     samples_directory = os.path.join(app_directory, 'reportSamples')
 
-    #     # Define the relative path to the JSON file inside the 'samples' directory
-    #     json_file_path = os.path.join(
-    #         samples_directory, 'InvoiceQueryResponse.json')
+        #     # Define the relative path to the JSON file inside the 'samples' directory
+        #     json_file_path = os.path.join(
+        #         samples_directory, 'InvoiceQueryResponse.json')
 
-    #     # Check if the file exists
-    #     if os.path.exists(json_file_path):
-    #         print(f"JSON file path: {json_file_path}")
-    #     else:
-    #         print("JSON file not found.")
+        #     # Check if the file exists
+        #     if os.path.exists(json_file_path):
+        #         print(f"JSON file path: {json_file_path}")
+        #     else:
+        #         print("JSON file not found.")
 
-    # # Step 2: Open and read the JSON file
-    #     with open(json_file_path, 'r') as json_file:
-    #         report_data = json.load(json_file)
+        # # Step 2: Open and read the JSON file
+        #     with open(json_file_path, 'r') as json_file:
+        #         report_data = json.load(json_file)
         # Extract the header and columns
         queryResponse = report_data.get('QueryResponse', {})
         time = report_data.get('time', {})
@@ -306,33 +313,31 @@ class QuickBooksService:
 
     def parse_profit_and_loss_detail_report(self, report_data):
 
-    #     # Get the current directory of the quickbooks_service.py file
-    #     current_directory = os.path.dirname(os.path.abspath(__file__))
+        #     # Get the current directory of the quickbooks_service.py file
+        #     current_directory = os.path.dirname(os.path.abspath(__file__))
 
-    #     # Navigate from 'services' to the 'api' directory
-    #     app_directory = os.path.dirname(os.path.dirname(current_directory))
+        #     # Navigate from 'services' to the 'api' directory
+        #     app_directory = os.path.dirname(os.path.dirname(current_directory))
 
-    #     # Navigate from 'app' to the 'samples' directory
-    #     samples_directory = os.path.join(app_directory, 'reportSamples')
+        #     # Navigate from 'app' to the 'samples' directory
+        #     samples_directory = os.path.join(app_directory, 'reportSamples')
 
-    #     # Define the relative path to the JSON file inside the 'samples' directory
-    #     json_file_path = os.path.join(
-    #         samples_directory, 'ProfitandLossDetail.json')
+        #     # Define the relative path to the JSON file inside the 'samples' directory
+        #     json_file_path = os.path.join(
+        #         samples_directory, 'ProfitandLossDetail.json')
 
-    #     # Check if the file exists
-    #     if os.path.exists(json_file_path):
-    #         print(f"JSON file path: {json_file_path}")
-    #     else:
-    #         print("JSON file not found.")
+        #     # Check if the file exists
+        #     if os.path.exists(json_file_path):
+        #         print(f"JSON file path: {json_file_path}")
+        #     else:
+        #         print("JSON file not found.")
 
-    # # Step 2: Open and read the JSON file
-    #     with open(json_file_path, 'r') as json_file:
-    #         report_data = json.load(json_file)
+        # # Step 2: Open and read the JSON file
+        #     with open(json_file_path, 'r') as json_file:
+        #         report_data = json.load(json_file)
         # Extract the header and columns
         header = report_data.get('Header', {})
-        columns = report_data.get('Columns', {})
-
-        # Extract rows and keep them in raw format
+        columns = report_data.get('Columns', {}).get('Column', [])
         rows = report_data.get('Rows', {})
 
         return {"Header": header, "Rows": rows, "Columns": columns}
@@ -403,27 +408,27 @@ class QuickBooksService:
 
     def parse_general_ledger_report(self, report_data):
 
-    #     # Get the current directory of the quickbooks_service.py file
-    #     current_directory = os.path.dirname(os.path.abspath(__file__))
+        #     # Get the current directory of the quickbooks_service.py file
+        #     current_directory = os.path.dirname(os.path.abspath(__file__))
 
-    #     # Navigate from 'services' to the 'api' directory
-    #     app_directory = os.path.dirname(os.path.dirname(current_directory))
+        #     # Navigate from 'services' to the 'api' directory
+        #     app_directory = os.path.dirname(os.path.dirname(current_directory))
 
-    #     # Navigate from 'app' to the 'samples' directory
-    #     samples_directory = os.path.join(app_directory, 'reportSamples')
+        #     # Navigate from 'app' to the 'samples' directory
+        #     samples_directory = os.path.join(app_directory, 'reportSamples')
 
-    #     # Define the relative path to the JSON file inside the 'samples' directory
-    #     json_file_path = os.path.join(samples_directory, 'GeneralLedger.json')
+        #     # Define the relative path to the JSON file inside the 'samples' directory
+        #     json_file_path = os.path.join(samples_directory, 'GeneralLedger.json')
 
-    #     # Check if the file exists
-    #     if os.path.exists(json_file_path):
-    #         print(f"JSON file path: {json_file_path}")
-    #     else:
-    #         print("JSON file not found.")
+        #     # Check if the file exists
+        #     if os.path.exists(json_file_path):
+        #         print(f"JSON file path: {json_file_path}")
+        #     else:
+        #         print("JSON file not found.")
 
-    # # Step 2: Open and read the JSON file
-    #     with open(json_file_path, 'r') as json_file:
-    #         report_data = json.load(json_file)
+        # # Step 2: Open and read the JSON file
+        #     with open(json_file_path, 'r') as json_file:
+        #         report_data = json.load(json_file)
         # Extract the header and columns
         header = report_data.get('Header', {})
         columns = report_data.get('Columns', {})
@@ -435,7 +440,7 @@ class QuickBooksService:
 
     def parse_quickbooks_report(self, report_data):
         # Check for 'QueryResponse' and 'Invoice' keys for invoice reports
-        if 'QueryResponse' in report_data and 'Invoice' in report_data['QueryResponse']:
+        if 'QueryResponse' in report_data and 'time' in report_data:
             # Handle invoice report parsing
             return self.parse_invoice_report(report_data)
         elif 'Header' in report_data and 'ReportName' in report_data['Header']:
