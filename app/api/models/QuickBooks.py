@@ -14,7 +14,7 @@ class QuickBooksToken(Base):
     __tablename__ = "quickbooks_tokens"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
+    user_id: Mapped[str] = mapped_column(String, ForeignKey('users.id'), nullable=False)
     access_token: Mapped[str] = mapped_column(String, nullable=False)
     refresh_token: Mapped[str] = mapped_column(String, nullable=True)
     realm_id: Mapped[str] = mapped_column(String, nullable=True)

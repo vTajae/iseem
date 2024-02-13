@@ -16,11 +16,14 @@ class QuickBooksRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
         
-    async def save_tokens(self, access_token, refresh_token, user_id, realm_id):
+    async def save_tokens(self, access_token: str, refresh_token: str, user_id: str, realm_id: str):
         # Check if a token record already exists
-        existing_token = await self.get_latest_tokens()
-
-
+        
+        print(user_id, "user_id")
+        
+        existing_token = await self.get_latest_tokens(user_id)
+        
+        print(existing_token, "existing_token")
         if existing_token:
             # Update the existing record
             existing_token.user_id = user_id
@@ -28,7 +31,6 @@ class QuickBooksRepository:
             existing_token.refresh_token = refresh_token
             existing_token.realm_id = realm_id
             existing_token.expires_at = datetime.utcnow() + timedelta(minutes=60)
-            print(existing_token, "yerrrrr")
             await self.db.commit()
         else:
             # Create a new record
@@ -37,11 +39,13 @@ class QuickBooksRepository:
             self.db.add(token_record)
             await self.db.commit()
             
-    async def get_realm_id_by_user_id(self, user_id: int):
+    async def get_realm_id_by_user_id(self, user_id: str):
         stmt = select(QuickBooksToken.realm_id).where(QuickBooksToken.user_id == user_id).order_by(QuickBooksToken.id.desc())
         result = await self.db.execute(stmt)
         # Fetch the first record's realm_id, if it exists
         realm_id = result.scalars().first()
+        
+        print (realm_id, "realm_id")
         
         # Check the type of the fetched result and handle accordingly
         if isinstance(realm_id, str):
@@ -52,8 +56,10 @@ class QuickBooksRepository:
             return None
 
 
-    
-    async def get_latest_tokens(self):
-        stmt = select(QuickBooksToken).order_by(QuickBooksToken.id.desc())
+        
+    async def get_latest_tokens(self, user_id: str):
+        print(user_id, "user_id")
+        stmt = select(QuickBooksToken).where(QuickBooksToken.user_id == user_id).order_by(QuickBooksToken.id.desc())
         result = await self.db.execute(stmt)
         return result.scalars().first()
+

@@ -23,7 +23,7 @@ class UserRepository:
         result = await self.db.execute(stmt)
         return result.scalars().first()
     
-    async def get_user_by_id(self, id: int):
+    async def get_user_by_id(self, id: str):
         stmt = select(User).where(User.id == id)
         result = await self.db.execute(stmt)
         return result.scalars().first()

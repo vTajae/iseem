@@ -8,7 +8,7 @@ class UserCreate(BaseModel):
     password: str
         
 class UserModel(BaseModel):
-    id: int
+    id: str
     username: str
     # hashed_password: str
     # expires_at: datetime

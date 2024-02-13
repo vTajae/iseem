@@ -47,7 +47,7 @@ class UserService:
         user = User(username=username, hashed_password=decoded_hashed_password)
         return await self.user_repo.add_user(user)
 
-    def generate_jwt_token(self, user_id: int):
+    def generate_jwt_token(self, user_id: str):
         return jwt.encode({"user_id": user_id}, USER_JWT_SECRET_KEY, algorithm=USER_JWT_ALGORITHM)
 
 
@@ -61,7 +61,7 @@ class UserService:
             return None
         return user
 
-    async def get_user_by_id(self, user_id: int) -> User:
+    async def get_user_by_id(self, user_id: str) -> User:
         user = await self.user_repo.get_user_by_id(user_id)
         return user
 
@@ -77,7 +77,7 @@ class UserService:
         encoded_jwt = jwt.encode(to_encode, USER_JWT_SECRET_KEY, algorithm=USER_JWT_ALGORITHM)
         return encoded_jwt
     
-    async def create_and_save_tokens(self, user_id: int):
+    async def create_and_save_tokens(self, user_id: str):
         # Token expiration times
         access_token_expires = timedelta(minutes=60)
         refresh_token_expires = timedelta(days=7)

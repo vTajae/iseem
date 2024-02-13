@@ -11,7 +11,7 @@ class Token(Base):
     
     id = Column(Integer, primary_key=True)
     token = Column(String, unique=True)
-    user_id = Column(Integer)
+    user_id = Column(String)
     expiry_date = Column(DateTime)
     is_active = Column(Boolean, default=True)
     token_type = Column(ENUM(TokenType, create_type=True, name='tokentype', metadata=Base.metadata)) 

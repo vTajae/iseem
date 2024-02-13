@@ -20,29 +20,62 @@ class CustomJSONEncoder(JSONEncoder):
     
 
 def paginate_data(data, page: int, limit: int):
-    # print(data, "data")
-    # Ensure data['rows'] is a list
-    if not isinstance(data.get('rows', []).get('Row', []), list):
-        raise TypeError("Expected a list for pagination, but got a different type")
+    print(data, "data")
+    # Check if it's invoice data based on the presence of 'QueryResponse' and 'Invoice' keys
+    if 'QueryResponse' in data and 'Invoice' in data['QueryResponse']:
+        invoices = data['QueryResponse']['Invoice']
+        total_items = data['QueryResponse'].get('totalCount', len(invoices))
 
-    start_index = (page - 1) * limit
-    end_index = start_index + limit
-    
-    paginated_rows = data['rows'].get('Row', [])[start_index:end_index]
-    
-    return {
-        'data': [
-            {   'Header': data.get('header', {}),  # Include the header if it exists
-                'Columns': data.get('columns', []),
-                'Rows': data.get('rows', {})
-            }
-        ],  # Include a list of dictionaries, each containing 'Columns' and 'Rows'
-        'page': page,
-        'total_pages': (len(data['rows']) + limit - 1) // limit,
-        'total_items': len(data['rows'])
-    }
+        start_index = (page - 1) * limit
+        end_index = start_index + limit
+        paginated_invoices = invoices[start_index:end_index]
 
+        # Construct the response for invoice data
+        return {
+            'data': {
+                'QueryResponse': {
+                    'Invoices': paginated_invoices,
+                    'startPosition': start_index + 1,
+                    'maxResults': len(paginated_invoices),
+                    'totalCount': total_items
+                },
+                "time": data['QueryResponse'].get('Time', '')
+            },
+            'page': page,
+            'total_pages': (total_items + limit - 1) // limit,
+            'total_items': total_items
+        }
 
+    # Assuming 'Rows' key for other types of data
+    elif 'Header' in data and 'ReportName' in data['Header']:
+        
+        print(data, "data")
+        rows = data['Rows']['Row']
+        start_index = (page - 1) * limit
+        end_index = start_index + limit
+        paginated_rows = rows[start_index:end_index]
+
+        # Construct the response for other data types
+        return {
+            'data': [
+                {
+                    'Header': data.get('Header', {}),
+                    'Columns': data.get('Columns', []),
+                    'Rows': {'Row': paginated_rows}
+                }
+            ],
+            'page': page,
+            'total_pages': (len(rows) + limit - 1) // limit,
+            'total_items': len(rows)
+        }
+    else:
+        # Handle unexpected data structure
+        return {
+            'data': [],
+            'page': page,
+            'total_pages': 0,
+            'total_items': 0
+        }
 
 def get_env_variable(var_name, default=None):
     value = os.getenv(var_name, default)

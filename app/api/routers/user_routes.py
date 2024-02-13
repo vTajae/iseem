@@ -69,9 +69,8 @@ async def login_user(response: Response, user_data: UserLoginSchema, service: Us
     # Set refresh token in HttpOnly cookie
     response.set_cookie(key="myRefresh_token", value=tokens["refresh_token"], httponly=True, max_age=7 * 24 * 60 * 60)
     
-    response_body = {"user": user, "tokens": tokens}
+    return({"user": user, "tokens": tokens})
     
-    return response_body
 
 
 @router.get("/user/profile", response_model=UserModel)

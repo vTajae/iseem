@@ -3,12 +3,10 @@ from app.api.dependencies.auth import get_current_user
 from app.api.dependencies.quickbooks_dependencies import get_quickbooks_service
 from app.api.models.QuickBooks import QuickBooksToken
 from app.api.models.User import User
-from app.api.schemas.quickbooks.quickbooks_TransactionList import PaginatedTransactionResponse, QuickBooksQueryParams, TransactionModel
+from app.api.schemas.quickbooks.quickbooks_TransactionList import QuickBooksQueryParams
 from app.api.services.quickbooks_service import QuickBooksService
-from fastapi import APIRouter, Depends, HTTPException, Request
-from app.config.quickbooks_config import get_env_variable
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from intuitlib.exceptions import AuthClientError
-from fastapi.responses import HTMLResponse, RedirectResponse
 from app.utils.utils import paginate_data
 from intuitlib.enums import Scopes
 import logging
@@ -35,8 +33,10 @@ async def quickbooks_callback(request: Request, user: User = Depends(get_current
                               service: QuickBooksService = Depends(get_quickbooks_service)):
     code = request.query_params.get('code')
     realm_id = request.query_params.get('realm_id')
-    
+
     print(realm_id, "realm_id")
+    print(code, "code")
+
 
     if not code:
         raise HTTPException(
@@ -44,10 +44,9 @@ async def quickbooks_callback(request: Request, user: User = Depends(get_current
 
     try:
         # The service handles the exchange of the code for tokens and saves them
-        test = await service.exchange_code_for_tokens(code, user.id , realm_id)
-        print(test, "test1323")
-        return test
-    
+        
+        print( user.id, "user.iddd")   
+        return await service.exchange_code_for_tokens(code, user.id, realm_id)
 
     except AuthClientError as e:
         raise HTTPException(status_code=e.status_code, detail=str(e))
@@ -64,23 +63,43 @@ async def get_quickbooks_report(
     service: QuickBooksService = Depends(get_quickbooks_service),
     user: User = Depends(get_current_user)
 ):
-
     # Retrieve the access token from cookies, or use None to refresh the token
     access_token = request.cookies.get("access_token")
     print(request.cookies, "request.cookies")
-    
+
   # Fetch full data from QuickBooks using the access token or refreshing it
-    full_data = await service.make_quickbooks_report_request( report_type, query_params.dict(), access_token, user.id)
+    full_data = await service.make_quickbooks_report_request(report_type, query_params.dict(), access_token, user.id)
     parsed_report = service.parse_quickbooks_report(full_data)
-    paginated_response = paginate_data(parsed_report, query_params.page, query_params.limit)
+    paginated_response = paginate_data(
+        parsed_report, query_params.page, query_params.limit)
     print(paginated_response, "paginated_response")
     return paginated_response
 
 
-@router.get("/quickbooks/token")
+@router.get("/api/quickbooks/token")
 async def get_access_token(current_user: User = Depends(get_current_user)):
     # Retrieve the latest token for the current user
     token_record = await QuickBooksToken.filter(user_id=current_user.id).first()
     if not token_record:
         raise HTTPException(status_code=404, detail="Token not found")
     return {"access_token": token_record.access_token}
+
+
+@router.get("/api/quickbooks/refresh")
+async def refresh_token(request: Request, response: Response, quickbooks_service: QuickBooksService = Depends(get_quickbooks_service), user: User = Depends(get_current_user)):
+    old_refresh_token = request.cookies.get("refresh_token")
+    
+    # print(old_refresh_token, "old_refresh_token")
+
+    if not old_refresh_token:
+        raise HTTPException(status_code=403, detail="Refresh token not found")
+
+    # Assuming `refresh_access_token_if_needed` handles the logic to check token expiration and refreshes if needed.
+    tokens = await quickbooks_service.refresh_access_token_if_needed(user.id)
+    print(tokens, "tokens123")
+    # Set the new refresh token in a secure HttpOnly cookie
+    response.set_cookie(key="refresh_token", value=tokens["refresh_token"],
+                        httponly=True, secure=True, max_age=100*24*60*60)  # 100 days
+
+    # Return the new access token in the response body
+    return {"access_token": tokens["access_token"], "message": "Access token refreshed"}
