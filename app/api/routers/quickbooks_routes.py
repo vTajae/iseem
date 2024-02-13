@@ -21,7 +21,6 @@ logger = logging.getLogger(__name__)
 async def quickbooks_login(service: QuickBooksService = Depends(get_quickbooks_service)) -> Dict[str, str]:
     try:
         auth_url = service.get_auth_url([Scopes.ACCOUNTING])
-        print(auth_url, "auth_url")
         return {"auth_url": auth_url}
     except Exception as e:
         raise HTTPException(
@@ -34,9 +33,6 @@ async def quickbooks_callback(request: Request, user: User = Depends(get_current
     code = request.query_params.get('code')
     realm_id = request.query_params.get('realm_id')
 
-    print(realm_id, "realm_id")
-    print(code, "code")
-
 
     if not code:
         raise HTTPException(
@@ -45,7 +41,6 @@ async def quickbooks_callback(request: Request, user: User = Depends(get_current
     try:
         # The service handles the exchange of the code for tokens and saves them
         
-        print( user.id, "user.iddd")   
         return await service.exchange_code_for_tokens(code, user.id, realm_id)
 
     except AuthClientError as e:
@@ -65,14 +60,13 @@ async def get_quickbooks_report(
 ):
     # Retrieve the access token from cookies, or use None to refresh the token
     access_token = request.cookies.get("access_token")
-    print(request.cookies, "request.cookies")
 
   # Fetch full data from QuickBooks using the access token or refreshing it
     full_data = await service.make_quickbooks_report_request(report_type, query_params.dict(), access_token, user.id)
+    print(full_data, "full_data")
     parsed_report = service.parse_quickbooks_report(full_data)
     paginated_response = paginate_data(
         parsed_report, query_params.page, query_params.limit)
-    print(paginated_response, "paginated_response")
     return paginated_response
 
 
@@ -96,7 +90,6 @@ async def refresh_token(request: Request, response: Response, quickbooks_service
 
     # Assuming `refresh_access_token_if_needed` handles the logic to check token expiration and refreshes if needed.
     tokens = await quickbooks_service.refresh_access_token_if_needed(user.id)
-    print(tokens, "tokens123")
     # Set the new refresh token in a secure HttpOnly cookie
     response.set_cookie(key="refresh_token", value=tokens["refresh_token"],
                         httponly=True, secure=True, max_age=100*24*60*60)  # 100 days
