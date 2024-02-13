@@ -47,7 +47,7 @@ def paginate_data(data, page: int, limit: int):
         }
 
     # Assuming 'Rows' key for other types of data
-    elif 'Header' in data and 'ReportName' in data['Header']:
+    elif 'Header' in data and 'ReportName' in data['Header'] and 'Row' in data['Rows']:
         
         print(data, "data")
         rows = data['Rows']['Row']
