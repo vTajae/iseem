@@ -24,6 +24,7 @@ class QuickBooksRepository:
         existing_token = await self.get_latest_tokens(user_id)
         
         print(existing_token, "existing_token")
+        
         if existing_token:
             # Update the existing record
             existing_token.user_id = user_id
