@@ -38,6 +38,8 @@ class QuickBooksService:
     async def refresh_access_token_if_needed(self, user_id):
 
         tokens = await self.repo.get_latest_tokens(user_id)
+        
+        print(tokens, "TOKENS BEFORE REFRESH")
 
         # Check if tokens exist and if the access token has expired
 
@@ -59,6 +61,9 @@ class QuickBooksService:
 
             # Assume new_tokens is a dictionary with 'access_token' and 'refresh_token' keys
             # Save the new tokens
+            
+            print(tokens, "TOKENS BEFORE REFRESH")
+
             # Ensure you pass all required parameters to save_tokens
             await self.repo.save_tokens(tokens.access_token, tokens.refresh_token, user_id, tokens.realm_id)
             # Return the new tokens as a dictionary for consistency
@@ -81,7 +86,7 @@ class QuickBooksService:
             # print(test, "AUTHCODEE")
             access_token = self.auth_client.access_token
             refresh_token = self.auth_client.refresh_token
-            print(realm_id, "realm_id !@##")
+            print(realm_id, "realm_id")
 
             print(user_id, "user_id")
 
@@ -93,7 +98,6 @@ class QuickBooksService:
             raise HTTPException(status_code=400, detail=str(e))
 
     async def make_quickbooks_report_request(self, report_type, query_params: dict, access_token, user_id: str):
-        print(user_id, "user_id6346")
         # if access_token:
         #     tokens = await self.refresh_access_token_if_needed(user_id)
         #     if not tokens:
