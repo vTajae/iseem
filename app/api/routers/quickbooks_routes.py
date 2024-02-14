@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 async def quickbooks_login(service: QuickBooksService = Depends(get_quickbooks_service)) -> Dict[str, str]:
     try:
         auth_url = service.get_auth_url([Scopes.ACCOUNTING])
+        print(auth_url, "auth_url")
         return {"auth_url": auth_url}
     except Exception as e:
         raise HTTPException(
@@ -30,13 +31,13 @@ async def quickbooks_login(service: QuickBooksService = Depends(get_quickbooks_s
 @router.get("/api/quickbooks/callback")
 async def quickbooks_callback(request: Request, user: User = Depends(get_current_user),
                               service: QuickBooksService = Depends(get_quickbooks_service)):
-    code = request.query_params.get('code')
-    realm_id = request.query_params.get('realm_id')
+    code = await request.query_params.get('code')
+    realm_id = await request.query_params.get('realm_id')
 
 
-    if not code:
+    if not code and not realm_id:
         raise HTTPException(
-            status_code=400, detail="Missing authorization code")
+            status_code=400, detail="Missing authorization code or realm_id")
 
     try:
         # The service handles the exchange of the code for tokens and saves them

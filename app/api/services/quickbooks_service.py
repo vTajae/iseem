@@ -49,7 +49,7 @@ class QuickBooksService:
             print(tokens.refresh_token, "tokens")
 
         try:
-            self.auth_client.refresh(
+            await self.auth_client.refresh(
                 refresh_token=tokens.refresh_token)
         except AuthClientError as e:
             # just printing here but it can be used for retry workflows, logging, etc
