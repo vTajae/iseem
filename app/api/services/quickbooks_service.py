@@ -48,7 +48,7 @@ class QuickBooksService:
         if not tokens or self.is_token_expired(tokens.expires_at):
             # Refresh the token using the stored refresh token
 
-            print(tokens.refresh_token, "tokens")
+            print(tokens.refresh_token, "refresh_tokens")
 
         try:
             self.auth_client.refresh(
@@ -62,7 +62,7 @@ class QuickBooksService:
             # Assume new_tokens is a dictionary with 'access_token' and 'refresh_token' keys
             # Save the new tokens
             
-            print(tokens, "TOKENS BEFORE REFRESH")
+            print(tokens, "TOKENS AFTER REFRESH")
 
             # Ensure you pass all required parameters to save_tokens
             await self.repo.save_tokens(tokens.access_token, tokens.refresh_token, user_id, tokens.realm_id)
