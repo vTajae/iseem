@@ -58,7 +58,8 @@ class QuickBooksService:
             print(e.status_code)
             print(e.content)
             print(e.intuit_tid)
-
+            
+        finally:
             # Assume new_tokens is a dictionary with 'access_token' and 'refresh_token' keys
             # Save the new tokens
             
