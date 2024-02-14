@@ -36,48 +36,39 @@ class QuickBooksService:
             raise HTTPException(status_code=400, detail=str(e))
 
     async def refresh_access_token_if_needed(self, user_id):
-
         tokens = await self.repo.get_latest_tokens(user_id)
-        
         print(tokens, "TOKENS BEFORE REFRESH")
 
+        # Initialize a variable to hold the new or current tokens
+        updated_tokens = None
+
         # Check if tokens exist and if the access token has expired
-
-        # print(self.is_token_expired(tokens.expires_at), "self.is_token_expired(tokens.expires_at)")
-
         if not tokens or self.is_token_expired(tokens.expires_at):
-            # Refresh the token using the stored refresh token
-
             print(tokens.refresh_token, "refresh_tokens")
+            try:
+                # Attempt to refresh the tokens
+                self.auth_client.refresh(refresh_token=tokens.refresh_token)
+                # If refresh is successful, save the new tokens
+                updated_tokens = await self.repo.save_tokens(
+                    tokens.access_token, tokens.refresh_token, user_id, tokens.realm_id)
+                print(updated_tokens, "TOKENS AFTER REFRESH")
+            except AuthClientError as e:
+                print(e.status_code)
+                print(e.content)
+                print(e.intuit_tid)
+                # Handle the error (e.g., log, retry, or return an error response)
+                # Depending on your application's requirements, you might want to return an error or default value here
 
-        try:
-            self.auth_client.refresh(
-                refresh_token=tokens.refresh_token)
-        except AuthClientError as e:
-            # just printing here but it can be used for retry workflows, logging, etc
-            print(e.status_code)
-            print(e.content)
-            print(e.intuit_tid)
-            
-        finally:
-            # Assume new_tokens is a dictionary with 'access_token' and 'refresh_token' keys
-            # Save the new tokens
-            
-            print(tokens, "TOKENS AFTER REFRESH")
+        # If tokens were updated (i.e., refreshed successfully), return them
+        if updated_tokens:
+            return updated_tokens
 
-            # Ensure you pass all required parameters to save_tokens
-            await self.repo.save_tokens(tokens.access_token, tokens.refresh_token, user_id, tokens.realm_id)
-            # Return the new tokens as a dictionary for consistency
-            return {
-                'access_token': tokens.access_token,
-                'refresh_token': tokens.refresh_token
-            }
-
-        # If the tokens are valid, return them in a dictionary format
+        # If the tokens did not need refreshing or the refresh failed but you still want to return the current tokens
         return {
             'access_token': tokens.access_token,
             'refresh_token': tokens.refresh_token
         }
+
 
     async def exchange_code_for_tokens(self, code: int, user_id: str, realm_id: str):
         try:
