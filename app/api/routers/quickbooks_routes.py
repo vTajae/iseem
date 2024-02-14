@@ -31,8 +31,8 @@ async def quickbooks_login(service: QuickBooksService = Depends(get_quickbooks_s
 @router.get("/api/quickbooks/callback")
 async def quickbooks_callback(request: Request, user: User = Depends(get_current_user),
                               service: QuickBooksService = Depends(get_quickbooks_service)):
-    code = await request.query_params.get('code')
-    realm_id = await request.query_params.get('realm_id')
+    code = request.query_params.get('code')
+    realm_id = request.query_params.get('realm_id')
 
 
     if not code and not realm_id:
