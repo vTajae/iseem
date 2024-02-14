@@ -57,7 +57,7 @@ async def get_quickbooks_report(
     report_type: str,
     query_params: QuickBooksQueryParams = Depends(),
     service: QuickBooksService = Depends(get_quickbooks_service),
-    user: User = Depends(get_current_user)
+    user: User = Depends(get_current_user),
 ):
     # Retrieve the access token from cookies, or use None to refresh the token
     access_token = request.cookies.get("access_token")
