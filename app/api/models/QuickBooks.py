@@ -24,7 +24,7 @@ class QuickBooksToken(Base):
 
     user = relationship("User")
     def __repr__(self):
-        return f"<QuickBooksToken(id={self.id}, access_token={self.access_token[:10]} user_id={self.user_id}...>"
+        return f"<QuickBooksToken(access_token={self.access_token[:10]} user_id={self.user_id}...>"
 
 # class Transaction(Base):
 #     __tablename__ = 'quickbooks_transactions'
