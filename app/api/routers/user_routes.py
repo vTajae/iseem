@@ -82,11 +82,7 @@ async def user_profile(
         raise HTTPException(
             status_code=401, detail="Session invalid or expired, please login.")
 
-    response = await user_service.get_user_by_id(user.id)
-
-    print(response, "response")
-
-    return response
+    return await user_service.get_user_by_id(user.id)
 
 
 @router.get("/refresh")
@@ -116,7 +112,7 @@ async def refresh_token(request: Request, response: Response, user_service: User
         response.set_cookie(key="myRefresh_token", value=tokens["refresh_token"], httponly=True, max_age=7 * 24 * 60 * 60)
         
         # Return the new access token in the response body
-        return {"access_token": tokens, "message": "Access token refreshed"}
+        return {"access_token": tokens["access_token"], "message": "Access token refreshed"}
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=403, detail="Refresh token has expired")
     except jwt.PyJWTError:

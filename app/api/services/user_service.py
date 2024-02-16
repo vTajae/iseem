@@ -25,18 +25,17 @@ class UserService:
         self.auth_repo = auth_repo
 
     async def invalidate_refresh_token(self, token: str):
-        response = await self.auth_repo.invalidate_token(token)
-        return response
+        return await self.auth_repo.invalidate_token(token)
+        
 
 
     async def get_user_by_username(self, username: str):
-        user = await self.user_repo.get_user_by_username(username)
-        return user
+        return await self.user_repo.get_user_by_username(username)
+       
 
     async def get_user_by_id(self, id: str):
-        user = await self.user_repo.get_user_by_id(id)
-        return user
-
+        return await self.user_repo.get_user_by_id(id)
+      
     async def register_user(self, username: str, password: str):
         if await self.user_repo.user_exists(username):
             return False
@@ -62,8 +61,8 @@ class UserService:
         return user
 
     async def get_user_by_id(self, user_id: str) -> User:
-        user = await self.user_repo.get_user_by_id(user_id)
-        return user
+        return await self.user_repo.get_user_by_id(user_id)
+        
 
 
     def create_a_token(self, data: dict, expires_delta: timedelta = None):
