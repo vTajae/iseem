@@ -1,3 +1,4 @@
+from azure.storage.blob import BlobServiceClient, BlobClient
 from typing import Dict
 from app.api.dependencies.auth import get_current_user
 from app.api.dependencies.quickbooks_dependencies import get_quickbooks_service
@@ -59,15 +60,23 @@ async def get_quickbooks_report(
     service: QuickBooksService = Depends(get_quickbooks_service),
     user: User = Depends(get_current_user),
 ):
-    # Retrieve the access token from cookies, or use None to refresh the token
+    # # Retrieve the access token from cookies, or use None to refresh the token
     access_token = request.cookies.get("access_token")
     
-    print(access_token, "access_token")
-    print(request.cookies, "request.cookies REPORT TYPE")
+    
+    # dir = r"file location"
+    # client = BlockBlobService(account_name='container1', account_key='Account_key')
+    # container = "container"
 
+    # client.create_blob_from_path(container_name=container, blob_name="Flatly/{enter file name}.json", file_path = dir)
+        
+        
   # Fetch full data from QuickBooks using the access token or refreshing it
     full_data = await service.make_quickbooks_report_request(report_type, query_params.dict(), access_token, user.id)
     print(full_data, "full_data")
+    
+    
+    
     parsed_report = service.parse_quickbooks_report(full_data)
     paginated_response = paginate_data(
         parsed_report, query_params.page, query_params.limit)
@@ -95,7 +104,7 @@ async def refresh_token(request: Request, response: Response, quickbooks_service
     # Assuming `refresh_access_token_if_needed` handles the logic to check token expiration and refreshes if needed.
     tokens = await quickbooks_service.refresh_access_token_if_needed(user.id)
     # Set the new refresh token in a secure HttpOnly cookie
-    print(tokens, "refreshed values in routes")
+    # print(tokens, "refreshed values in routes")
     response.set_cookie(key="refresh_token", value=tokens["refresh_token"],
                         httponly=True, secure=True, max_age=100*24*60*60)  # 100 days
 

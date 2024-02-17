@@ -19,7 +19,7 @@ class QuickBooksRepository:
     async def save_tokens(self, access_token: str, refresh_token: str, user_id: str, realm_id: str):
         # Check if a token record already exists
         
-        print(user_id, "user_id")
+        # print(user_id, "user_id")
         
         existing_token = await self.get_latest_tokens(user_id)
         
@@ -59,7 +59,7 @@ class QuickBooksRepository:
 
         
     async def get_latest_tokens(self, user_id: str):
-        print(user_id, "user_id")
+        # print(user_id, "user_id")
         stmt = select(QuickBooksToken).where(QuickBooksToken.user_id == user_id).order_by(QuickBooksToken.id.desc())
         result = await self.db.execute(stmt)
         return result.scalars().first()

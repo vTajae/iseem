@@ -1,6 +1,6 @@
 # services/quickbooks_service.py
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import json
 import os
 from app.api.schemas.quickbooks.quickbooks_CashFlow import CashFlowColumns, CashFlowData, CashFlowHeader, CashFlowReport, CashFlowRow, CashFlowRows, CashFlowSummary, TransactionHeader
@@ -37,21 +37,27 @@ class QuickBooksService:
 
     async def refresh_access_token_if_needed(self, user_id):
         tokens = await self.repo.get_latest_tokens(user_id)
-        print(tokens, "TOKENS BEFORE REFRESH")
 
         # Initialize a variable to hold the new or current tokens
         updated_tokens = None
-
+        # print(tokens.expires_at, "expiration")
         # Check if tokens exist and if the access token has expired
+
         if not tokens or self.is_token_expired(tokens.expires_at):
-            print(tokens.refresh_token, "refresh_tokens")
             try:
                 # Attempt to refresh the tokens
                 self.auth_client.refresh(refresh_token=tokens.refresh_token)
+
+                new_tokens = {
+                    'access_token': self.auth_client.access_token,
+                    'refresh_token': self.auth_client.refresh_token,
+                    'expires_in': datetime.now(timezone.utc) + timedelta(seconds=self.auth_client.expires_in)
+                }
+
                 # If refresh is successful, save the new tokens
                 await self.repo.save_tokens(
-                    tokens.access_token, tokens.refresh_token, user_id, tokens.realm_id)
-                print(updated_tokens, "TOKENS AFTER REFRESH")
+                    new_tokens["access_token"], new_tokens["refresh_token"], user_id, tokens.realm_id)
+                # print(updated_tokens, "TOKENS AFTER REFRESH")
             except AuthClientError as e:
                 print(e.status_code)
                 print(e.content)
@@ -68,7 +74,6 @@ class QuickBooksService:
             'access_token': tokens.access_token,
             'refresh_token': tokens.refresh_token
         }
-
 
     async def exchange_code_for_tokens(self, code: int, user_id: str, realm_id: str):
         try:
@@ -127,31 +132,31 @@ class QuickBooksService:
             return response.json()
 
     def parse_cashflow_report(self, report_data):
-         # Get the current directory of the quickbooks_service.py file
-            current_directory = os.path.dirname(os.path.abspath(__file__))
+        # Get the current directory of the quickbooks_service.py file
+        current_directory = os.path.dirname(os.path.abspath(__file__))
 
-            # Navigate from 'services' to the 'api' directory
-            app_directory = os.path.dirname(os.path.dirname(current_directory))
+        # Navigate from 'services' to the 'api' directory
+        app_directory = os.path.dirname(os.path.dirname(current_directory))
 
-            # Navigate from 'app' to the 'samples' directory
-            samples_directory = os.path.join(app_directory, 'reportSamples')
+        # Navigate from 'app' to the 'samples' directory
+        samples_directory = os.path.join(app_directory, 'reportSamples')
 
-            # Define the relative path to the JSON file inside the 'samples' directory
-            json_file_path = os.path.join(samples_directory, 'CashFlow.json')
+        # Define the relative path to the JSON file inside the 'samples' directory
+        json_file_path = os.path.join(samples_directory, 'CashFlow.json')
 
         # Step 2: Open and read the JSON file
-            with open(json_file_path, 'r') as json_file:
-                report_data = json.load(json_file)
-            # Extract the header and columns
-            header = report_data.get('Header', {})
-            columns = report_data.get('Columns', {}).get('Column', [])
-            rows = report_data.get('Rows', {})
+        with open(json_file_path, 'r') as json_file:
+            report_data = json.load(json_file)
+        # Extract the header and columns
+        header = report_data.get('Header', {})
+        columns = report_data.get('Columns', {}).get('Column', [])
+        rows = report_data.get('Rows', {})
 
-            return {
-                "Header": header,
-                "Columns": columns,
-                "Rows": rows
-            }
+        return {
+            "Header": header,
+            "Columns": columns,
+            "Rows": rows
+        }
 
     def parse_transaction_list_report(self, report_data):
 

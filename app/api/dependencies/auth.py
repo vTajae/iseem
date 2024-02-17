@@ -37,7 +37,7 @@ async def get_current_user_id(request: Request, user_service: UserService = Depe
                 status_code=403, detail="User ID not found in token")
 
         user = await user_service.get_user_by_id(user_id)
-        print(user, "user12")
+        # print(user, "user12")
         if user:
             return user.id
         else:
@@ -70,9 +70,7 @@ async def get_current_user(request: Request, user_service: UserService = Depends
     try:
         payload = jwt.decode(token, USER_JWT_SECRET_KEY,
                              algorithms=[USER_JWT_ALGORITHM])
-        
-        print(payload, "payload")
-        
+                
         user_id = payload.get("user_id")
 
         if user_id is None:
@@ -81,7 +79,6 @@ async def get_current_user(request: Request, user_service: UserService = Depends
                 status_code=403, detail="User ID not found in token")
 
         user = await user_service.get_user_by_id(user_id)
-        print(user, "user18")
         if user:
             return user
         else:
