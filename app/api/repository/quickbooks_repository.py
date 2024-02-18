@@ -16,7 +16,7 @@ class QuickBooksRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
         
-    async def save_tokens(self, access_token: str, refresh_token: str, user_id: str, realm_id: str):
+    async def save_tokens(self, access_token: str, refresh_token: str, user_id: str, realm_id: str, expires_at: int):
         # Check if a token record already exists
         
         # print(user_id, "user_id")
@@ -31,7 +31,7 @@ class QuickBooksRepository:
             existing_token.access_token = access_token
             existing_token.refresh_token = refresh_token
             existing_token.realm_id = realm_id
-            existing_token.expires_at = datetime.utcnow() + timedelta(minutes=60)
+            existing_token.expires_at = expires_at
             await self.db.commit()
         else:
             # Create a new record
@@ -59,7 +59,6 @@ class QuickBooksRepository:
 
         
     async def get_latest_tokens(self, user_id: str):
-        # print(user_id, "user_id")
         stmt = select(QuickBooksToken).where(QuickBooksToken.user_id == user_id).order_by(QuickBooksToken.id.desc())
         result = await self.db.execute(stmt)
         return result.scalars().first()

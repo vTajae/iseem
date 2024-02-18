@@ -23,6 +23,7 @@ class QuickBooksService:
 
     def is_token_expired(self, tokens):
         now_utc_aware = datetime.utcnow().replace(tzinfo=timezone.utc)
+        print(now_utc_aware >= tokens, "now_utc_aware")
         return now_utc_aware >= tokens
 
     def get_auth_url(self, scopes):
@@ -43,20 +44,23 @@ class QuickBooksService:
         # print(tokens.expires_at, "expiration")
         # Check if tokens exist and if the access token has expired
 
+        print(tokens.expires_at, "tokens.expires_at")
+
         if not tokens or self.is_token_expired(tokens.expires_at):
             try:
                 # Attempt to refresh the tokens
                 self.auth_client.refresh(refresh_token=tokens.refresh_token)
 
-                new_tokens = {
+                updated_tokens = {
                     'access_token': self.auth_client.access_token,
                     'refresh_token': self.auth_client.refresh_token,
                     'expires_in': datetime.now(timezone.utc) + timedelta(seconds=self.auth_client.expires_in)
                 }
 
+                print(updated_tokens, "updated_tokens")
                 # If refresh is successful, save the new tokens
                 await self.repo.save_tokens(
-                    new_tokens["access_token"], new_tokens["refresh_token"], user_id, tokens.realm_id)
+                    updated_tokens["access_token"], updated_tokens["refresh_token"], user_id, tokens.realm_id, updated_tokens["expires_in"])
                 # print(updated_tokens, "TOKENS AFTER REFRESH")
             except AuthClientError as e:
                 print(e.status_code)
@@ -67,6 +71,8 @@ class QuickBooksService:
 
         # If tokens were updated (i.e., refreshed successfully), return them
         if updated_tokens:
+
+            print(updated_tokens, "updated_tokens")
             return updated_tokens
 
         # If the tokens did not need refreshing or the refresh failed but you still want to return the current tokens
@@ -83,11 +89,13 @@ class QuickBooksService:
             # print(test, "AUTHCODEE")
             access_token = self.auth_client.access_token
             refresh_token = self.auth_client.refresh_token
+            expires_in = datetime.now(
+                timezone.utc) + timedelta(seconds=self.auth_client.expires_in)
             print(realm_id, "realm_id")
 
             print(user_id, "user_id")
 
-            await self.repo.save_tokens(access_token, refresh_token, user_id, realm_id)
+            await self.repo.save_tokens(access_token, refresh_token, user_id, realm_id, expires_in)
 
             # print(test, "test")
             return {"access_token": access_token, "refresh_token": refresh_token}
@@ -95,17 +103,16 @@ class QuickBooksService:
             raise HTTPException(status_code=400, detail=str(e))
 
     async def make_quickbooks_report_request(self, report_type, query_params: dict, access_token, user_id: str):
-        # if access_token:
-        #     tokens = await self.refresh_access_token_if_needed(user_id)
-        #     if not tokens:
-        #         raise HTTPException(
-        #             status_code=401, detail="Authentication required")
-        #     token_to_use = tokens['access_token']
+        if access_token:
+            tokens = await self.refresh_access_token_if_needed(user_id)
+            if not tokens:
+                raise HTTPException(
+                    status_code=401, detail="Authentication required")
+            token_to_use = tokens['access_token']
 
         company_id = await self.repo.get_realm_id_by_user_id(user_id)
 
-        # print(token_to_use, "token_to_use")
-        print(company_id, "company_id")
+        print(token_to_use, "token_to_use")
 
         if report_type != "Invoice":
             # url = f"https://sandbox-quickbooks.api.intuit.com/v3/company/{company_id}/reports/{report_type}"
@@ -121,7 +128,7 @@ class QuickBooksService:
         else:
             pass
         headers = {
-            "Authorization": f"Bearer {access_token}",
+            "Authorization": f"Bearer {token_to_use}",
             "Accept": "application/json",
             "Content-Type": "application/json"
         }

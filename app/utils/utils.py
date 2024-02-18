@@ -20,9 +20,9 @@ class CustomJSONEncoder(JSONEncoder):
 
 
 def paginate_data(data, page: int, limit: int):
-    
+
     print(data, "data")
-    
+
     # Default response for unexpected data structure
     default_response = {
         'data': [],
@@ -31,17 +31,47 @@ def paginate_data(data, page: int, limit: int):
         'total_items': 0
     }
 
-    # Check for 'NoReportData' option
-    no_report_data_option = next(
-        (option for option in data.get('Header', {}).get('Option', [])
-         if option.get('Name') == 'NoReportData'), None)
+    # Initialize default value
+    no_report_data_value = None
 
-    # If 'NoReportData' is true, return empty data array
-    if no_report_data_option and no_report_data_option.get('Value') == 'true':
-        return default_response
+    if 'Header' in data and 'ReportName' in data['Header']:
 
+        # Iterate over options to find "NoReportData"
+        for option in data['Header'].get('Option', []):
+            if option.get('Name') == 'NoReportData':
+                no_report_data_value = option.get('Value')
+                break
+
+        print(no_report_data_value, "no_report_data_value")
+        if not bool(no_report_data_value):
+            return default_response
+
+            # Handle reports data
+        else:
+            rows = data.get('Rows', {}).get('Row', [])
+            if not rows:
+                return default_response  # Return default if no rows
+
+            start_index, end_index = (page - 1) * limit, page * limit
+            paginated_rows = rows[start_index:end_index]
+
+            # Construct report data response
+            return {
+                'data': [
+                    {
+                        'Header': data.get('Header', {}),
+                        'Columns': data.get('Columns', []),
+                        'Rows': {'Row': paginated_rows}
+                    }
+                ],
+                'page': page,
+                'total_pages': (len(rows) + limit - 1) // limit,
+                'total_items': len(rows)
+            }
+
+    # Handle report data
     # Handle invoice data
-    if 'QueryResponse' in data and 'Invoice' in data['QueryResponse']:
+    elif 'QueryResponse' in data and 'Invoice' in data['QueryResponse']:
         invoices = data['QueryResponse']['Invoice']
         total_items = data['QueryResponse'].get('totalCount', len(invoices))
         start_index, end_index = (page - 1) * limit, page * limit
@@ -49,41 +79,17 @@ def paginate_data(data, page: int, limit: int):
 
         # Construct invoice data response
         return {
-            'data': {
-                'QueryResponse': {
-                    'Invoices': paginated_invoices,
-                    'startPosition': start_index + 1,
-                    'maxResults': len(paginated_invoices),
-                    'totalCount': total_items
-                },
-                "time": data['QueryResponse'].get('Time', '')
-            },
-            'page': page,
-            'total_pages': (total_items + limit - 1) // limit,
-            'total_items': total_items
-        }
-
-    # Handle reports data
-    elif 'Header' in data and 'ReportName' in data['Header']:
-        rows = data.get('Rows', {}).get('Row', [])
-        if not rows:
-            return default_response  # Return default if no rows
-
-        start_index, end_index = (page - 1) * limit, page * limit
-        paginated_rows = rows[start_index:end_index]
-
-        # Construct report data response
-        return {
             'data': [
                 {
-                    'Header': data.get('Header', {}),
-                    'Columns': data.get('Columns', []),
-                    'Rows': {'Row': paginated_rows}
+                    'QueryResponse': {
+                        'Invoices': paginated_invoices,
+                    },
+                    "time": data['QueryResponse'].get('Time', '')
                 }
             ],
             'page': page,
-            'total_pages': (len(rows) + limit - 1) // limit,
-            'total_items': len(rows)
+            'total_pages': (total_items + limit - 1) // limit,
+            'total_items': total_items
         }
 
     return default_response

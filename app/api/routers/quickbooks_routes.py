@@ -30,11 +30,10 @@ async def quickbooks_login(service: QuickBooksService = Depends(get_quickbooks_s
 
 
 @router.get("/api/quickbooks/callback")
-async def quickbooks_callback(request: Request, user: User = Depends(get_current_user),
+async def quickbooks_callback(request: Request, response: Response, user: User = Depends(get_current_user),
                               service: QuickBooksService = Depends(get_quickbooks_service)):
     code = request.query_params.get('code')
     realm_id = request.query_params.get('realm_id')
-
 
     if not code and not realm_id:
         raise HTTPException(
@@ -42,9 +41,13 @@ async def quickbooks_callback(request: Request, user: User = Depends(get_current
 
     try:
         # The service handles the exchange of the code for tokens and saves them
-        
-        return await service.exchange_code_for_tokens(code, user.id, realm_id)
 
+        tokens = await service.exchange_code_for_tokens(code, user.id, realm_id)
+        print(tokens, "tokens")
+        response.set_cookie(key="refresh_token", value=tokens["refresh_token"],
+                            httponly=True, secure=True, max_age=100*24*60*60)  # 100 days
+
+        return {"access_token": tokens["access_token"], "refresh_token": tokens["access_token"]}
     except AuthClientError as e:
         raise HTTPException(status_code=e.status_code, detail=str(e))
     except Exception as e:
@@ -62,21 +65,19 @@ async def get_quickbooks_report(
 ):
     # # Retrieve the access token from cookies, or use None to refresh the token
     access_token = request.cookies.get("access_token")
+
     
-    
+
     # dir = r"file location"
     # client = BlockBlobService(account_name='container1', account_key='Account_key')
     # container = "container"
 
     # client.create_blob_from_path(container_name=container, blob_name="Flatly/{enter file name}.json", file_path = dir)
-        
-        
+
   # Fetch full data from QuickBooks using the access token or refreshing it
     full_data = await service.make_quickbooks_report_request(report_type, query_params.dict(), access_token, user.id)
     print(full_data, "full_data")
-    
-    
-    
+
     parsed_report = service.parse_quickbooks_report(full_data)
     paginated_response = paginate_data(
         parsed_report, query_params.page, query_params.limit)
@@ -95,7 +96,7 @@ async def get_access_token(current_user: User = Depends(get_current_user)):
 @router.get("/api/quickbooks/refresh")
 async def refresh_token(request: Request, response: Response, quickbooks_service: QuickBooksService = Depends(get_quickbooks_service), user: User = Depends(get_current_user)):
     old_refresh_token = request.cookies.get("refresh_token")
-    
+
     # print(old_refresh_token, "old_refresh_token")
 
     if not old_refresh_token:
