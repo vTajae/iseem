@@ -126,6 +126,7 @@ class QuickBooksService:
 
         else:
             pass
+        
         headers = {
             "Authorization": f"Bearer {token_to_use}",
             "Accept": "application/json",
@@ -138,6 +139,8 @@ class QuickBooksService:
             return response.json()
 
     def parse_cashflow_report(self, report_data):
+        
+        # print(report_data, "report_data")
         # # Get the current directory of the quickbooks_service.py file
         # current_directory = os.path.dirname(os.path.abspath(__file__))
 
@@ -445,7 +448,36 @@ class QuickBooksService:
 
         return {"Header": header, "Rows": rows, "Columns": columns}
 
-    def parse_quickbooks_report(self, report_data):
+    def parse_quickbooks_report(self, report_data, report_type):
+        
+        # Get the current directory of the quickbooks_service.py file
+        current_directory = os.path.dirname(os.path.abspath(__file__))
+
+        # Navigate from 'services' to the 'api' directory
+        app_directory = os.path.dirname(os.path.dirname(current_directory))
+
+        # Navigate from 'app' to the 'reportSamples' directory
+        report_samples_directory = os.path.join(app_directory, 'reportSamples')
+
+        # Navigate from 'reportSamples' to the 'quickbooks' directory
+        quickbooks_directory = os.path.join(report_samples_directory, 'quickbooks')
+
+        # Ensure the directory exists, if not, create it
+        if not os.path.exists(quickbooks_directory):
+            os.makedirs(quickbooks_directory)
+
+        # Specify the file name with timestamp
+        file_name = f"{report_type}_report_{datetime.utcnow().strftime('%Y-%m-%dT%H-%M-%S')}.json"
+
+        # Combine directory path and file name
+        file_path = os.path.join(quickbooks_directory, file_name)
+
+        print(file_path, "file_path")
+
+        # Write the JSON data to the file
+        with open(file_path, 'w') as file:
+            json.dump(report_data, file)
+        
         # Check for 'QueryResponse' and 'Invoice' keys for invoice reports
         if 'QueryResponse' in report_data and 'time' in report_data:
             # Handle invoice report parsing
@@ -476,4 +508,4 @@ class QuickBooksService:
             else:
                 return {"message": "Unknown report type or no data available."}
         else:
-            pass
+            return {"message": "Unable to parse reportData"}

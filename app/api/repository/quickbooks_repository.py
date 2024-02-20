@@ -9,8 +9,7 @@ from app.api.models.QuickBooks import QuickBooksToken
 # Plaid API to get Chase data.
 # table = importer.import(acct="Quickbooks","ICM", "CASH")
 
-# client_manager = iseem.client_manager(port=8000,nemo_security=security)
-
+# client_manager = iseem.client_manager(port=8000,nemo_security=security)\
 
 class QuickBooksRepository:
     def __init__(self, db: AsyncSession):

@@ -13,39 +13,39 @@ from app.utils.utils import paginate_data
 router = APIRouter()
 
 
-@router.get("/quickbooks/{report_type}")
-async def get_quickbooks_report(
-    request: Request,
-    report_type: str,
-    query_params: QuickBooksQueryParams = Depends(),
-    service: QuickBooksService = Depends(get_quickbooks_service),
-    user: User = Depends(get_current_user),
-    aws_s3_service: AWSS3Service = Depends(get_aws_s3_service),
-    ):
+# @router.get("/quickbooks/{report_type}")
+# async def get_quickbooks_report(
+#     request: Request,
+#     report_type: str,
+#     query_params: QuickBooksQueryParams = Depends(),
+#     service: QuickBooksService = Depends(get_quickbooks_service),
+#     user: User = Depends(get_current_user),
+#     aws_s3_service: AWSS3Service = Depends(get_aws_s3_service),
+#     ):
     
-    access_token = request.cookies.get("access_token")  # Retrieve access token from cookies
+#     access_token = request.cookies.get("access_token")  # Retrieve access token from cookies
 
-    # Fetch full data from QuickBooks using the provided access token
-    full_data = await service.make_quickbooks_report_request(report_type, query_params.dict(), access_token, user.id)
+#     # Fetch full data from QuickBooks using the provided access token
+#     full_data = await service.make_quickbooks_report_request(report_type, query_params.dict(), access_token, user.id)
     
-    print(full_data)
-    if not full_data:
-        raise HTTPException(status_code=404, detail="Report data not found.")
+#     print(full_data)
+#     if not full_data:
+#         raise HTTPException(status_code=404, detail="Report data not found.")
 
-    # Generate a unique file name for the report
+#     # Generate a unique file name for the report
 
-    file_name = f"{report_type}_{datetime.utcnow().strftime('%Y-%m-%dT%H-%M-%S')}.json"
+#     file_name = f"{report_type}_{datetime.utcnow().strftime('%Y-%m-%dT%H-%M-%S')}.json"
     
-    # Upload the report data to AWS S3
-    try:
-        await aws_s3_service.upload_json_to_s3( object_name=file_name, data=full_data)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to upload report to AWS S3: {str(e)}")
+#     # Upload the report data to AWS S3
+#     try:
+#         await aws_s3_service.upload_json_to_s3( object_name=file_name, data=full_data)
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=f"Failed to upload report to AWS S3: {str(e)}")
     
-    parsed_report = service.parse_quickbooks_report(full_data)
-    paginated_response = paginate_data(
-        parsed_report, query_params.page, query_params.limit)
-    return paginated_response
+#     parsed_report = service.parse_quickbooks_report(full_data)
+#     paginated_response = paginate_data(
+#         parsed_report, query_params.page, query_params.limit)
+#     return paginated_response
 
 
 @router.post("/upload-to-s3/{object_name}")
