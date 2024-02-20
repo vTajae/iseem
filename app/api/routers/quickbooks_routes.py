@@ -55,33 +55,25 @@ async def quickbooks_callback(request: Request, response: Response, user: User =
             status_code=600, detail=f"Error during token exchange: {str(e)}")
 
 
-@router.get("/quickbooks/{report_type}")
-async def get_quickbooks_report(
-    request: Request,
-    report_type: str,
-    query_params: QuickBooksQueryParams = Depends(),
-    service: QuickBooksService = Depends(get_quickbooks_service),
-    user: User = Depends(get_current_user),
-):
-    # # Retrieve the access token from cookies, or use None to refresh the token
-    access_token = request.cookies.get("access_token")
+# @router.get("/quickbooks/{report_type}")
+# async def get_quickbooks_report(
+#     request: Request,
+#     report_type: str,
+#     query_params: QuickBooksQueryParams = Depends(),
+#     service: QuickBooksService = Depends(get_quickbooks_service),
+#     user: User = Depends(get_current_user),
+# ):
+#     # # Retrieve the access token from cookies, or use None to refresh the token
+#     access_token = request.cookies.get("access_token")
 
-    
+#   # Fetch full data from QuickBooks using the access token or refreshing it
+#     full_data = await service.make_quickbooks_report_request(report_type, query_params.dict(), access_token, user.id)
+#     print(full_data, "full_data")
 
-    # dir = r"file location"
-    # client = BlockBlobService(account_name='container1', account_key='Account_key')
-    # container = "container"
-
-    # client.create_blob_from_path(container_name=container, blob_name="Flatly/{enter file name}.json", file_path = dir)
-
-  # Fetch full data from QuickBooks using the access token or refreshing it
-    full_data = await service.make_quickbooks_report_request(report_type, query_params.dict(), access_token, user.id)
-    print(full_data, "full_data")
-
-    parsed_report = service.parse_quickbooks_report(full_data)
-    paginated_response = paginate_data(
-        parsed_report, query_params.page, query_params.limit)
-    return paginated_response
+#     parsed_report = service.parse_quickbooks_report(full_data)
+#     paginated_response = paginate_data(
+#         parsed_report, query_params.page, query_params.limit)
+#     return paginated_response
 
 
 @router.get("/api/quickbooks/token")

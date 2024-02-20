@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.concurrency import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.routers import plaid_routes, user_routes, quickbooks_routes
+from app.api.routers import aws_routes, plaid_routes, user_routes, quickbooks_routes
 from app.api.dependencies.database import async_database_session
 
 origins = ["http://localhost:3000", "https://localhost:3001"]
@@ -39,6 +39,9 @@ app.include_router(user_routes.router)
 app.include_router(quickbooks_routes.router)
 app.include_router(plaid_routes.router)
 # app.include_router(auth_routes.router)
+app.include_router(aws_routes.router)
+
+
 
 
 

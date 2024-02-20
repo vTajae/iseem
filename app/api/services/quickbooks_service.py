@@ -1,15 +1,14 @@
 # services/quickbooks_service.py
 
 from datetime import datetime, timedelta, timezone
-import json
-import os
-from app.api.schemas.quickbooks.quickbooks_CashFlow import CashFlowColumns, CashFlowData, CashFlowHeader, CashFlowReport, CashFlowRow, CashFlowRows, CashFlowSummary, TransactionHeader
 from fastapi import HTTPException
 from intuitlib.client import AuthClient
 from intuitlib.exceptions import AuthClientError
 from app.config.quickbooks_config import QUICKBOOKS_CLIENT_ID, QUICKBOOKS_SECRET, QUICKBOOKS_REDIRECT_URI, QUICKBOOKS_ENV
 from app.api.repository.quickbooks_repository import QuickBooksRepository
 import httpx
+import os
+import json
 
 
 class QuickBooksService:
@@ -91,9 +90,9 @@ class QuickBooksService:
             refresh_token = self.auth_client.refresh_token
             expires_in = datetime.now(
                 timezone.utc) + timedelta(seconds=self.auth_client.expires_in)
-            print(realm_id, "realm_id")
+            # print(realm_id, "realm_id")
 
-            print(user_id, "user_id")
+            # print(user_id, "user_id")
 
             await self.repo.save_tokens(access_token, refresh_token, user_id, realm_id, expires_in)
 
@@ -352,27 +351,27 @@ class QuickBooksService:
 
     def parse_sales_by_product_report(self, report_data):
 
-    #     # Get the current directory of the quickbooks_service.py file
-    #     current_directory = os.path.dirname(os.path.abspath(__file__))
+        #     # Get the current directory of the quickbooks_service.py file
+        #     current_directory = os.path.dirname(os.path.abspath(__file__))
 
-    #     # Navigate from 'services' to the 'api' directory
-    #     app_directory = os.path.dirname(os.path.dirname(current_directory))
+        #     # Navigate from 'services' to the 'api' directory
+        #     app_directory = os.path.dirname(os.path.dirname(current_directory))
 
-    #     # Navigate from 'app' to the 'samples' directory
-    #     samples_directory = os.path.join(app_directory, 'reportSamples')
+        #     # Navigate from 'app' to the 'samples' directory
+        #     samples_directory = os.path.join(app_directory, 'reportSamples')
 
-    #     # Define the relative path to the JSON file inside the 'samples' directory
-    #     json_file_path = os.path.join(samples_directory, 'SalesByProduct.json')
+        #     # Define the relative path to the JSON file inside the 'samples' directory
+        #     json_file_path = os.path.join(samples_directory, 'SalesByProduct.json')
 
-    #     # Check if the file exists
-    #     if os.path.exists(json_file_path):
-    #         print(f"JSON file path: {json_file_path}")
-    #     else:
-    #         print("JSON file not found.")
+        #     # Check if the file exists
+        #     if os.path.exists(json_file_path):
+        #         print(f"JSON file path: {json_file_path}")
+        #     else:
+        #         print("JSON file not found.")
 
-    # # Step 2: Open and read the JSON file
-    #     with open(json_file_path, 'r') as json_file:
-    #         report_data = json.load(json_file)
+        # # Step 2: Open and read the JSON file
+        #     with open(json_file_path, 'r') as json_file:
+        #         report_data = json.load(json_file)
         # Extract the header and columns
         header = report_data.get('Header', {})
         columns = report_data.get('Columns', {})
@@ -384,27 +383,27 @@ class QuickBooksService:
 
     def parse_trial_balance_report(self, report_data):
 
-    #     # Get the current directory of the quickbooks_service.py file
-    #     current_directory = os.path.dirname(os.path.abspath(__file__))
+        #     # Get the current directory of the quickbooks_service.py file
+        #     current_directory = os.path.dirname(os.path.abspath(__file__))
 
-    #     # Navigate from 'services' to the 'api' directory
-    #     app_directory = os.path.dirname(os.path.dirname(current_directory))
+        #     # Navigate from 'services' to the 'api' directory
+        #     app_directory = os.path.dirname(os.path.dirname(current_directory))
 
-    #     # Navigate from 'app' to the 'samples' directory
-    #     samples_directory = os.path.join(app_directory, 'reportSamples')
+        #     # Navigate from 'app' to the 'samples' directory
+        #     samples_directory = os.path.join(app_directory, 'reportSamples')
 
-    #     # Define the relative path to the JSON file inside the 'samples' directory
-    #     json_file_path = os.path.join(samples_directory, 'TrialBalance.json')
+        #     # Define the relative path to the JSON file inside the 'samples' directory
+        #     json_file_path = os.path.join(samples_directory, 'TrialBalance.json')
 
-    #     # Check if the file exists
-    #     if os.path.exists(json_file_path):
-    #         print(f"JSON file path: {json_file_path}")
-    #     else:
-    #         print("JSON file not found.")
+        #     # Check if the file exists
+        #     if os.path.exists(json_file_path):
+        #         print(f"JSON file path: {json_file_path}")
+        #     else:
+        #         print("JSON file not found.")
 
-    # # Step 2: Open and read the JSON file
-    #     with open(json_file_path, 'r') as json_file:
-    #         report_data = json.load(json_file)
+        # # Step 2: Open and read the JSON file
+        #     with open(json_file_path, 'r') as json_file:
+        #         report_data = json.load(json_file)
         # Extract the header and columns
         header = report_data.get('Header', {})
         columns = report_data.get('Columns', {})

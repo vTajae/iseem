@@ -1,24 +1,24 @@
-from azure.storage.blob import BlobServiceClient, BlobClient
-from app.utils.utils import get_env_variable
-
-
-AZURE_CONNECTION_STRING = get_env_variable('AZURE_CONNECTION_STRING')
-CONTAINER_NAME = get_env_variable('CONTAINER_NAME')
-ACCOUNT_NAME = get_env_variable('ACCOUNT_NAME')
-ACCOUNT_KEY = get_env_variable('ACCOUNT_KEY')
-
+# services/azure_blob_service.py
+import json
+from fastapi import HTTPException
+from app.config.azure_config import blob_service_client
 
 class AzureBlobService:
-    def __init__(self, connection_string: str, container_name: str):
-        self.blob_service_client = BlobServiceClient.from_connection_string(connection_string)
-        self.container_name = container_name
-        self.container_client = self.blob_service_client.get_container_client(container_name)
+    def __init__(self, container_name, account_name, account_key):
+        
+        self.blob_service_client = BlobServiceClient(
+            container_name=container_name,
+            account_name=account_name,
+            account_key=account_key,
+        )
+        
 
-    async def upload_blob(self, blob_name: str, data: bytes):
-        blob_client = self.container_client.get_blob_client(blob_name)
-        await blob_client.upload_blob(data)
-
-    async def create_blob_from_path(self, blob_name: str, file_path: str):
-        with open(file_path, "rb") as data:
-            await self.upload_blob(blob_name, data.read())
-
+    async def upload_blob(self, blob_name: str, data: dict):
+        try:
+            blob_client = self.blob_service_client.ge(container=self.container_name, blob=blob_name)
+            data_bytes = json.dumps(data).encode('utf-8')
+            await blob_client.upload_blob(data_bytes, overwrite=True)
+            print(f"Blob {blob_name} uploaded to container {self.container_name}.")
+        except Exception as e:
+            print(f"Failed to upload blob: {e}")
+            raise HTTPException(status_code=500, detail="Failed to upload blob.")

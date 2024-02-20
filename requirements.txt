@@ -14,5 +14,6 @@ httpx
 sqlalchemy-cockroachdb
 virtualenv
 psycopg2-binary
-azure-storage-blob
 azure-identity
+azure-storage-blob[aio]
+boto3
