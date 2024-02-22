@@ -111,7 +111,7 @@ class QuickBooksService:
 
         company_id = await self.repo.get_realm_id_by_user_id(user_id)
 
-        print(token_to_use, "token_to_use")
+        # print(token_to_use, "token_to_use")
 
         if report_type != "Invoice":
             # url = f"https://sandbox-quickbooks.api.intuit.com/v3/company/{company_id}/reports/{report_type}"
@@ -123,7 +123,6 @@ class QuickBooksService:
 
             # url = f"https://sandbox-quickbooks.api.intuit.com/v3/company/{company_id}/query?query={sql_statement}"
             url = f"https://quickbooks.api.intuit.com/v3/company/{company_id}/query?query={sql_statement}"
-
         else:
             pass
         
