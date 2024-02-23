@@ -71,15 +71,15 @@ async def get_quickbooks_report(
 
     print(custom_params, "custom_params")
 
-#    Fetch full data from QuickBooks using the provided access token
-    full_data = await service.make_quickbooks_report_request(report_type, query_params.dict(), access_token, user.id)
+    #  Fetch full data from QuickBooks using the provided access token
+    full_data = await service.make_quickbooks_report_request(report_type, custom_params, access_token, user.id)
 
-    print(full_data)
+    # print(full_data)
     if not full_data:
         raise HTTPException(status_code=404, detail="Report data not found.")
 
     # Generate a unique file name for the report
-
+    
     file_name = f"{report_type}_{datetime.utcnow().strftime('%Y-%m-%dT%H-%M-%S')}.json"
 
     # Upload the report data to AWS S3
@@ -89,7 +89,7 @@ async def get_quickbooks_report(
         raise HTTPException(
             status_code=500, detail=f"Failed to upload report to AWS S3: {str(e)}")
 
-    parsed_report = service.parse_quickbooks_report(full_data)
+    parsed_report = service.parse_quickbooks_report(full_data, report_type)
     paginated_response = paginate_data(
         parsed_report, query_params.page, query_params.limit)
     return paginated_response

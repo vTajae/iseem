@@ -1,6 +1,7 @@
 # services/quickbooks_service.py
 
 from datetime import datetime, timedelta, timezone
+import logging
 from fastapi import HTTPException
 from intuitlib.client import AuthClient
 from intuitlib.exceptions import AuthClientError
@@ -131,6 +132,10 @@ class QuickBooksService:
             "Accept": "application/json",
             "Content-Type": "application/json"
         }
+        
+        logging.basicConfig(level=logging.DEBUG)
+        logging.getLogger("httpx").setLevel(logging.DEBUG)
+
 
         async with httpx.AsyncClient() as client:
             response = await client.get(url, headers=headers, params=query_params)
